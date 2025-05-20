@@ -1,0 +1,21 @@
+
+@font-face {
+  font-family: 'Poppins-Variable';
+  src: url('../assets/fonts/Poppins-Variable.woff2') format('woff2'),
+       url('../assets/fonts/Poppins-Variable.woff') format('woff'),
+       url('../assets/fonts/Poppins-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BeVietnamPro-Variable';
+  src: url('../assets/fonts/BeVietnamPro-Variable.woff2') format('woff2'),
+       url('../assets/fonts/BeVietnamPro-Variable.woff') format('woff'),
+       url('../assets/fonts/BeVietnamPro-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+

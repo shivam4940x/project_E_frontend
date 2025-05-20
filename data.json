@@ -1,0 +1,21 @@
+{
+  "id": "102585159405680754938",
+  "displayName": "shivam",
+  "name": { "givenName": "shivam" },
+  "emails": [{ "value": "shivamsingh4940x@gmail.com", "verified": true }],
+  "photos": [
+    {
+      "value": "https://lh3.googleusercontent.com/a/ACg8ocLQOQrupfiv1wJZmT7HecpRSrBKXWLm3YQIYI-849NnSDd-qTvm=s96-c"
+    }
+  ],
+  "provider": "google",
+  "_raw": "{\n  \"sub\": \"102585159405680754938\",\n  \"name\": \"shivam\",\n  \"given_name\": \"shivam\",\n  \"picture\": \"https://lh3.googleusercontent.com/a/ACg8ocLQOQrupfiv1wJZmT7HecpRSrBKXWLm3YQIYI-849NnSDd-qTvm\\u003ds96-c\",\n  \"email\": \"shivamsingh4940x@gmail.com\",\n  \"email_verified\": true\n}",
+  "_json": {
+    "sub": "102585159405680754938",
+    "name": "shivam",
+    "given_name": "shivam",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocLQOQrupfiv1wJZmT7HecpRSrBKXWLm3YQIYI-849NnSDd-qTvm=s96-c",
+    "email": "shivamsingh4940x@gmail.com",
+    "email_verified": true
+  }
+}
