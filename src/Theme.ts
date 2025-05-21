@@ -47,8 +47,8 @@ const theme = createTheme({
           "& .MuiInputLabel-root.Mui-focused": {
             color: "#BBFBFF", // Tailwind blue-500
           },
-          "& .MuiInput-underline:before": {
-            borderBottomColor: "gray", // Color for the line before focus
+          "&:before": {
+            borderBottomColor: "rgba(187, 251, 255, 0.5)", 
           },
         },
       },

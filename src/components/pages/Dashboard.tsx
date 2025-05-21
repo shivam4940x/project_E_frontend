@@ -6,6 +6,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { Fragment } from "react/jsx-runtime";
@@ -20,7 +21,8 @@ import type { DashboardContent } from "@/types/SharedProps";
 import { useForm } from "react-hook-form";
 import { CustomTextField } from "../utility/FormInput";
 import { useFriend } from "@/hooks/useFriend";
-import type { onGoingRequests } from "@/types/Response";
+import CloseIcon from "@mui/icons-material/Close";
+import type { FriendRequestObj } from "@/types/Response";
 type NavProps = {
   setContent: Dispatch<SetStateAction<DashboardContent>>;
   currentContent: DashboardContent;
@@ -127,30 +129,24 @@ const AllUsers = () => {
             {page.users.map((user, i) => (
               <div
                 key={user.id}
-                className="brightness-75 hover:brightness-100 duration-75 h-24"
+                className="brightness-75 hover:brightness-100 duration-75"
               >
                 <ListItem alignItems="center" className="mr-2">
                   <ListItemAvatar>
                     <Avatar alt={user.email} src={user.profile.avatar} />
                   </ListItemAvatar>
                   <ListItemText
-                    className="text-white space-y-1"
-                    primary={user.username}
-                    secondary={
+                    className="text-white space-y-1 py-2 my-2"
+                    primary={
                       <Fragment>
-                        <span className="flex">
-                          <Typography
-                            component="span"
-                            variant="body2"
-                            className="text-gray-400 text-xs"
-                          >
-                            {user.id}
-                          </Typography>
+                        <span className="flex justify-between gap-3">
+                          <span>{user.username}</span>
                           <Button
                             component="span"
                             onClick={() => {
                               copyText(user.id);
                             }}
+                            className="py-2"
                           >
                             <ContentCopyIcon className="text-sm mx-1" />
                           </Button>
@@ -254,33 +250,35 @@ const AddFriend = () => {
 };
 
 const OnlineFriends = () => {
-  const { friendRequests, rejectFriend, acceptFriend } = useFriend();
-  const [OnGoingRequests, setOnGoingRequests] = useState<
-    onGoingRequests[] | []
-  >([]);
+  const { friendRequests, cancelFriend, acceptFriend, rejectFriend } =
+    useFriend();
+  const [Requests, setRequests] = useState<
+    | FriendRequestObj
+    | { onGoingRequests: undefined; inComingRequests: undefined }
+  >();
 
   useEffect(() => {
     if (friendRequests) {
-      setOnGoingRequests(friendRequests.onGoingRequests);
+      setRequests(friendRequests);
       console.log(friendRequests);
     }
   }, [friendRequests]);
 
   return (
     <div>
-      <div className="space-y-4" id="outgoing_Requests">
-        <Typography
-          variant="h5"
-          className="border-b border-white-l/10 py-2 h-12 flex items-end px-1"
-        >
-          <span>Outgoing requests</span>
-        </Typography>
-        <List
-          sx={{ width: "100%" }}
-          className="bg-dull-black/20 rounded-xl p-0"
-        >
-          {OnGoingRequests.length > 0 &&
-            OnGoingRequests.map((request) => (
+      {Requests?.onGoingRequests && Requests?.onGoingRequests.length > 0 && (
+        <div className="space-y-4" id="outgoing_Requests">
+          <Typography
+            variant="h5"
+            className="border-b border-white-l/10 py-2 h-12 flex items-end px-1"
+          >
+            <span>Outgoing requests</span>
+          </Typography>
+          <List
+            sx={{ width: "100%" }}
+            className="bg-dull-black/20 rounded-xl p-0"
+          >
+            {Requests.onGoingRequests.map((request) => (
               <div
                 key={request.id}
                 className="hover:bg-dull-black/10  duration-100 h-20 w-full center border-b border-white-l/20 last:border-b-0"
@@ -307,12 +305,74 @@ const OnlineFriends = () => {
                       />
                     </div>
                     <div className="space-x-5">
+                      <Tooltip
+                        title="Cancel Friend Request"
+                        arrow
+                        placement="top"
+                      >
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          className="aspect-square rounded-full min-w-10 max-w-10"
+                          onClick={() => cancelFriend(request.addresseeId)}
+                        >
+                          <CloseIcon />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  </div>
+                </ListItem>
+              </div>
+            ))}
+          </List>
+        </div>
+      )}
+      {Requests?.inComingRequests && Requests?.inComingRequests.length > 0 && (
+        <div className="space-y-4" id="incoming_Requests">
+          <Typography
+            variant="h5"
+            className="border-b border-white-l/10 py-2 h-12 flex items-end px-1"
+          >
+            <span>Incoming requests</span>
+          </Typography>
+          <List
+            sx={{ width: "100%" }}
+            className="bg-dull-black/20 rounded-xl p-0"
+          >
+            {Requests.inComingRequests.map((request) => (
+              <div
+                key={request.id}
+                className="hover:bg-dull-black/10  duration-100 h-20 w-full center border-b border-white-l/20 last:border-b-0"
+              >
+                <ListItem alignItems="center" className="mr-2">
+                  <div className="flex justify-between w-full items-center">
+                    <div className="flex gap-2 items-center">
+                      <ListItemAvatar className="center">
+                        <Avatar
+                          alt={request.requester.username}
+                          src={request.requester.profile.avatar}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={request.requester.username}
+                        secondary={
+                          <Fragment>
+                            <span className="text-sm text-gray-400 pl-1">
+                              <span></span>
+                              <span>pending</span>
+                            </span>
+                          </Fragment>
+                        }
+                      />
+                    </div>
+                    <div className="space-x-5">
                       <Button
                         variant="text"
                         color="success"
                         size="small"
                         onClick={() => {
-                          acceptFriend(request.addresseeId);
+                          acceptFriend(request.requesterId);
                         }}
                       >
                         Accept
@@ -322,7 +382,7 @@ const OnlineFriends = () => {
                         color="error"
                         size="small"
                         onClick={() => {
-                          rejectFriend(request.addresseeId);
+                          rejectFriend(request.requesterId);
                         }}
                       >
                         Decline
@@ -332,8 +392,9 @@ const OnlineFriends = () => {
                 </ListItem>
               </div>
             ))}
-        </List>
-      </div>
+          </List>
+        </div>
+      )}
     </div>
   );
 };

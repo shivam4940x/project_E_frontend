@@ -29,7 +29,9 @@ const Dashboard = () => {
         </nav>
       </div>
       <div className="flex w-full h-[calc(100vh-56px)]">
-        <main className="grow px-4 py-2">{content[currentContent]}</main>
+        <main className="grow px-4 py-2 max-h-full overflow-scroll">
+          {content[currentContent]}
+        </main>
         <div className="w-76 h-full overflow-hidden border-l border-light-blue/20">
           <AllUsers />
         </div>

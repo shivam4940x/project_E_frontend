@@ -1,5 +1,9 @@
 import type { AxiosResponse } from "axios";
-import type { CurrentUser, FriendRequest, UserGetAll } from "@/types/Response";
+import type {
+  CurrentUser,
+  FriendRequestObj,
+  UserGetAll,
+} from "@/types/Response";
 import CreateCRUD from "./service";
 import axiosInstance from "@/lib/plugins/axios";
 
@@ -14,20 +18,30 @@ const FriendService = {
   get: (): Promise<AxiosResponse<CurrentUser>> => {
     return friendServiceCrud.get();
   },
-  sendRequest: (id: string): Promise<AxiosResponse<CurrentUser>> => {
+
+  sendRequest: (id: string): Promise<AxiosResponse<{ message: string }>> => {
     return axiosInstance.post("/friend/request/send", {
       id,
     });
   },
-  getRequests: (): Promise<AxiosResponse<FriendRequest>> => {
+
+  getRequests: (): Promise<AxiosResponse<FriendRequestObj>> => {
     return axiosInstance.get("/friend/requests");
   },
-  accept: (id: string): Promise<AxiosResponse<FriendRequest>> => {
+
+  cancel: (id: string): Promise<AxiosResponse<{ message: string }>> => {
+    return axiosInstance.put("/friend/request/cancel", {
+      id,
+    });
+  },
+
+  accept: (id: string): Promise<AxiosResponse<{ message: string }>> => {
     return axiosInstance.put("/friend/request/accept", {
       id,
     });
   },
-  reject: (id: string): Promise<AxiosResponse<FriendRequest>> => {
+
+  reject: (id: string): Promise<AxiosResponse<{ message: string }>> => {
     return axiosInstance.put("/friend/request/reject", {
       id,
     });

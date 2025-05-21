@@ -2,8 +2,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import FriendService from "@/services/friend.service";
-import type { FriendRequest } from "@/types/Response";
+import type { FriendRequestObj } from "@/types/Response";
 
+const onError = (error: any) => {
+  const msg: string = error?.response?.data?.message as string;
+  if (msg) {
+    toast.error(msg);
+  } else {
+    toast.error("An unknown error occurred");
+  }
+};
 const useFriend = () => {
   const queryClient = useQueryClient();
 
@@ -16,30 +24,11 @@ const useFriend = () => {
       toast.success("Request sent successfully");
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
     },
-    onError: (error: any) => {
-      const msg: string = error?.response?.data?.message as string;
-      const errorMessages: Record<string, string> = {
-        "you cannot add yourself": "You cannot add yourself as a friend.",
-        "invalid userid": "The user ID is invalid.",
-        "friend request already sent":
-          "You have already sent a friend request to this user.",
-        "friend request already accepted":
-          "You are already friends with this user.",
-        "friend request already declined":
-          "This friend request has been declined already.",
-        "unknown error": "An unknown error occurred. Please try again later.",
-      };
-      const message = msg?.toLowerCase();
-      if (message && errorMessages[message]) {
-        toast.success(errorMessages[message]);
-      } else {
-        toast.error("An unknown error occurred");
-      }
-    },
+    onError,
   });
 
   // Get Friend Requests
-  const getRequestsQuery = useQuery<FriendRequest, Error>({
+  const getRequestsQuery = useQuery<FriendRequestObj, Error>({
     queryKey: ["friendRequests"],
     queryFn: async () => {
       const response = await FriendService.getRequests();
@@ -57,9 +46,7 @@ const useFriend = () => {
       toast.success("Friend request accepted");
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
     },
-    onError: () => {
-      toast.error("Failed to accept request");
-    },
+    onError,
   });
 
   // Reject Request Mutation
@@ -71,9 +58,18 @@ const useFriend = () => {
       toast.info("Friend request rejected");
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
     },
-    onError: () => {
-      toast.error("Failed to reject request");
+    onError,
+  });
+  // cancel Request Mutation
+  const cancelFriendMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await FriendService.reject(id);
     },
+    onSuccess: () => {
+      toast.success("Friend request canceled");
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+    },
+    onError,
   });
 
   return {
@@ -85,6 +81,7 @@ const useFriend = () => {
     },
     acceptFriend: acceptFriendMutation.mutate,
     rejectFriend: rejectFriendMutation.mutate,
+    cancelFriend: cancelFriendMutation.mutate,
     friendRequests: getRequestsQuery.data,
     friendRequestsStatus: {
       isLoading: getRequestsQuery.isLoading,

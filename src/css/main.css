@@ -2,7 +2,7 @@
   --font-BeVietnamPro: "BeVietnamPro-Variable", sans-serif;
   --font-Poppins: "Poppins-Variable", sans-serif;
   --color-dull-black: #121212;
-  --color-paper-black: #1A1A1D;
+  --color-paper-black: #1a1a1d;
   --color-soft-red: #de4242;
   --color-soft-blue: #8dd8ff;
   --color-light-blue: #bbfbff;
@@ -17,10 +17,10 @@ body {
   font-family: var(--font-BeVietnamPro);
   color: var(--color-white);
 }
-/* Thin scrollbar */
+/* WebKit Scrollbar Customization */
 *::-webkit-scrollbar {
-  width: 3px;
-  height: 2px; /* for horizontal scrollbars */
+  width: 4px;
+  height: 4px;
 }
 
 *::-webkit-scrollbar-track {
@@ -28,9 +28,18 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: var(--color-soft-red);
+  background: var(--color-soft-red);
   border-radius: 8px;
 }
+
+/* Kill scrollbar buttons */
+*::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  background: none;
+  display: block;
+}
+
 input:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s;
   -webkit-text-fill-color: #ffffff !important; /* Optional: control text color */
