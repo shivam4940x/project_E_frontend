@@ -1,9 +1,11 @@
 import { Avatar, Box, Card, IconButton, Typography } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import useUserStore from "@/store/user.store";
+// import useUserStore from "@/store/user.store";
+import { useUsers } from "@/hooks/useUsers";
 
 const Settings = () => {
-  const { user } = useUserStore();
+  // const { user } = useUserStore();
+  const { data: user, error } = useUsers().useCurrentUser();
   return (
     <div className="h-full w-full backdrop-blur-sm ">
       <Card className="flex center p-1 bg-transparent">
@@ -14,7 +16,7 @@ const Settings = () => {
         />
         <Typography variant="h6" className="capitalize">
           <span className="text-sm">
-          {user?.username}
+            {error ? error.message : user?.username}
           </span>
         </Typography>
         <Box sx={{ flexGrow: 1 }} />

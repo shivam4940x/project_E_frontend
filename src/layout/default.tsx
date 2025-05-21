@@ -1,17 +1,7 @@
 import { Settings } from "@/components/layouts/default";
-import useUserStore from "@/store/user.store";
-import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
 const DefaulLayout = () => {
-  const { user, getUser } = useUserStore();
-
-  useEffect(() => {
-    if (!user) {
-      getUser(); // Zustand will update the state automatically
-    }
-  }, [user, getUser]);
-
   return (
     <div
       className="flex h-screen flex-col max-h-screen overflow-hidden w-full"

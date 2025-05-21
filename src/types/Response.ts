@@ -16,4 +16,25 @@ type CurrentUser = {
   username: string;
   profile: { avatar: string };
 };
-export type { UserGetAll, CurrentUser };
+// inComingRequests:
+type onGoingRequests = {
+  id: string;
+  requesterId: string;
+  addresseeId: string;
+  status: "PENDING" | "ACCEPTED" | "REJECTED"; // Extend as needed
+  createdAt: string; // ISO string; you can use `Date` if parsed
+  updatedAt: string;
+  addressee: {
+    id: string;
+    username: string;
+    email: string;
+    profile: {
+      avatar: string;
+    };
+  };
+};
+type FriendRequest = {
+  onGoingRequests: onGoingRequests[];
+};
+
+export type { UserGetAll, CurrentUser, FriendRequest, onGoingRequests };

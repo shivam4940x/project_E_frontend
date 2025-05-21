@@ -6,7 +6,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         text: {
-          color: "var(--color-light-blue)",
+          color: "var(--color-white)",
           fontWeight: 400,
           textTransform: "capitalize",
           "&:hover": {
@@ -51,8 +51,6 @@ const theme = createTheme({
             borderBottomColor: "gray", // Color for the line before focus
           },
         },
-
-        
       },
     },
   },

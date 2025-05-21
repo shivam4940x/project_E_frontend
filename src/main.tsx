@@ -27,7 +27,12 @@ createRoot(document.getElementById("root")!).render(
         <ThemeProvider theme={theme}>
           <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
           <BrowserRouter>
-            <ToastContainer autoClose={2500} />
+            <ToastContainer
+              position="top-right"
+              autoClose={2500}
+              theme="dark"
+              
+            />
             <QueryClientProvider client={queryClient}>
               <ReactQueryDevtools initialIsOpen={false} />
               <App />
