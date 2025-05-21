@@ -2,7 +2,7 @@ import type { AxiosResponse } from "axios";
 import type {
   CurrentUser,
   FriendRequestObj,
-  UserGetAll,
+  FriendsAll,
 } from "@/types/Response";
 import CreateCRUD from "./service";
 import axiosInstance from "@/lib/plugins/axios";
@@ -11,7 +11,7 @@ import axiosInstance from "@/lib/plugins/axios";
 const friendServiceCrud = new CreateCRUD("/friend");
 
 const FriendService = {
-  getAll: (page = 1, limit = 10): Promise<AxiosResponse<UserGetAll>> => {
+  getAll: (page = 1, limit = 10): Promise<AxiosResponse<FriendsAll>> => {
     return friendServiceCrud.getAll(page, limit);
   },
 

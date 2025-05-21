@@ -1,8 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type InfiniteData,
+  type UseInfiniteQueryResult,
+} from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import FriendService from "@/services/friend.service";
-import type { FriendRequestObj } from "@/types/Response";
+import type { FriendRequestObj, FriendsAll } from "@/types/Response";
 
 const onError = (error: any) => {
   const msg: string = error?.response?.data?.message as string;
@@ -12,20 +19,8 @@ const onError = (error: any) => {
     toast.error("An unknown error occurred");
   }
 };
-const useFriend = () => {
+const useFriendRequest = () => {
   const queryClient = useQueryClient();
-
-  // Add Friend Mutation
-  const addFriendMutation = useMutation({
-    mutationFn: async ({ id }: { id: string }) => {
-      return await FriendService.sendRequest(id);
-    },
-    onSuccess: () => {
-      toast.success("Request sent successfully");
-      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-    },
-    onError,
-  });
 
   // Get Friend Requests
   const getRequestsQuery = useQuery<FriendRequestObj, Error>({
@@ -45,6 +40,7 @@ const useFriend = () => {
     onSuccess: () => {
       toast.success("Friend request accepted");
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
     },
     onError,
   });
@@ -73,12 +69,6 @@ const useFriend = () => {
   });
 
   return {
-    addFriend: addFriendMutation.mutate,
-    addFriendStatus: {
-      isPending: addFriendMutation.isPending,
-      isSuccess: addFriendMutation.isSuccess,
-      isError: addFriendMutation.isError,
-    },
     acceptFriend: acceptFriendMutation.mutate,
     rejectFriend: rejectFriendMutation.mutate,
     cancelFriend: cancelFriendMutation.mutate,
@@ -92,4 +82,51 @@ const useFriend = () => {
   };
 };
 
-export { useFriend };
+const useFriend = () => {
+  const queryClient = useQueryClient();
+
+  // Add Friend Mutation
+  const addFriendMutation = useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      return await FriendService.sendRequest(id);
+    },
+    onSuccess: () => {
+      toast.success("Request sent successfully");
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+    },
+    onError,
+  });
+
+  return {
+    addFriend: addFriendMutation.mutate,
+    addFriendStatus: {
+      isPending: addFriendMutation.isPending,
+      isSuccess: addFriendMutation.isSuccess,
+      isError: addFriendMutation.isError,
+    },
+    //get friends
+    useInfinty: (
+      limit: number = 5
+    ): UseInfiniteQueryResult<InfiniteData<FriendsAll>, Error> => {
+      return useInfiniteQuery<FriendsAll, Error>({
+        queryKey: ["friends"],
+        queryFn: async ({ pageParam = 1 }) => {
+          const page = pageParam as number;
+          const res = await FriendService.getAll(page, limit);
+          return res.data;
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+          const totalFetched = allPages.reduce((acc, page) => {
+            console.log(page);
+            return acc + page.friendList.length;
+          }, 0);
+          return totalFetched < lastPage.total
+            ? allPages.length + 1
+            : undefined;
+        },
+      });
+    },
+  };
+};
+export { useFriendRequest, useFriend };

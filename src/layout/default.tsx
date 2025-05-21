@@ -15,7 +15,7 @@ const DefaulLayout = () => {
         backgroundBlendMode: "overlay",
       }}
     >
-      <div className="flex grow">
+      <div className="flex grow backdrop-blur-[1px]">
         <div className="w-96 h-full flex flex-col justify-between">
           <div className="bg-deep-blue/50 grow"></div>
           <div className="h-16 w-full p-2">

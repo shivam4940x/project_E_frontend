@@ -6,9 +6,12 @@ import DefaultLayout from "./layout/default";
 // Lazy-loaded components
 const Error404 = lazy(() => import("@/components/utility/404"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Chat = lazy(() => import("@/pages/Chat"));
 const Login = lazy(() => import("@/pages/Login"));
 
 const App = () => {
+  // const pages = [];
+
   return (
     <Suspense
       fallback={
@@ -22,6 +25,7 @@ const App = () => {
         <Route path="/" element={<DefaultLayout />}>
           {/* Index route (root path "/") */}
           <Route index element={<Dashboard />} />
+          <Route path="/chat/:id" element={<Chat />} />
         </Route>
 
         {/* Standalone routes */}

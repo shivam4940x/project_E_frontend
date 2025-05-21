@@ -1,6 +1,6 @@
-
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
+
 
 .center {
   @apply flex justify-center items-center;
@@ -8,13 +8,18 @@
 .takeScreen {
   @apply top-0 left-0 bottom-0 right-0 h-full w-full;
 }
-.center_ab{
-  @apply left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+.center_ab {
+  @apply left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
 }
-button{
-  @apply cursor-pointer
+button {
+  @apply cursor-pointer;
 }
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   @apply font-Poppins capitalize;
 }
 
@@ -42,9 +47,9 @@ h6 {
   @apply text-base font-medium leading-relaxed tracking-wide;
 }
 
-h6{
-  @apply  text-sm text-light-blue
+h6 {
+  @apply text-sm text-light-blue;
 }
-a{
-  @apply text-light-blue hover:text-dark-blue cursor-pointer duration-150
+a {
+  @apply text-light-blue hover:text-dark-blue cursor-pointer duration-150;
 }

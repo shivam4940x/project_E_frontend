@@ -6,13 +6,14 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Skeleton,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { Fragment } from "react/jsx-runtime";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Loading from "../ui/Loading";
-import { useUsers, useIntersectionObserver } from "@/hooks/useUsers";
+import { useUsers } from "@/hooks/useUsers";
 import { useEffect, useRef, useState } from "react";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { copyText } from "@/lib/other";
@@ -20,9 +21,13 @@ import GroupIcon from "@mui/icons-material/Groups";
 import type { DashboardContent } from "@/types/SharedProps";
 import { useForm } from "react-hook-form";
 import { CustomTextField } from "../utility/FormInput";
-import { useFriend } from "@/hooks/useFriend";
+import { useFriend, useFriendRequest } from "@/hooks/useFriend";
 import CloseIcon from "@mui/icons-material/Close";
 import type { FriendRequestObj } from "@/types/Response";
+import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+
 type NavProps = {
   setContent: Dispatch<SetStateAction<DashboardContent>>;
   currentContent: DashboardContent;
@@ -30,8 +35,8 @@ type NavProps = {
 
 const Nav = ({ setContent, currentContent }: NavProps) => {
   const FriendsAction = [
-    { title: "online", value: "online" },
     { title: "all", value: "all" },
+    { title: "requests", value: "requests" },
     { title: "add friends", value: "add" },
   ];
 
@@ -249,9 +254,9 @@ const AddFriend = () => {
   );
 };
 
-const OnlineFriends = () => {
+const Requests = () => {
   const { friendRequests, cancelFriend, acceptFriend, rejectFriend } =
-    useFriend();
+    useFriendRequest();
   const [Requests, setRequests] = useState<
     | FriendRequestObj
     | { onGoingRequests: undefined; inComingRequests: undefined }
@@ -367,26 +372,30 @@ const OnlineFriends = () => {
                       />
                     </div>
                     <div className="space-x-5">
-                      <Button
-                        variant="text"
-                        color="success"
-                        size="small"
-                        onClick={() => {
-                          acceptFriend(request.requesterId);
-                        }}
-                      >
-                        Accept
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        onClick={() => {
-                          rejectFriend(request.requesterId);
-                        }}
-                      >
-                        Decline
-                      </Button>
+                      <Tooltip title=" Accept Request" arrow placement="top">
+                        <Button
+                          variant="text"
+                          color="success"
+                          size="small"
+                          onClick={() => {
+                            acceptFriend(request.requesterId);
+                          }}
+                        >
+                          Accept
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="Reject Request" arrow placement="top">
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          onClick={() => {
+                            rejectFriend(request.requesterId);
+                          }}
+                        >
+                          Decline
+                        </Button>
+                      </Tooltip>
                     </div>
                   </div>
                 </ListItem>
@@ -400,7 +409,131 @@ const OnlineFriends = () => {
 };
 
 const AllFriends = () => {
-  return <div>al frinealkfj</div>;
+  const { useInfinty } = useFriend();
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useInfinty(10);
+
+  useIntersectionObserver({
+    targetRef: loadMoreRef as RefObject<HTMLElement>,
+    onIntersect: () => {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    enabled: hasNextPage && !isFetchingNextPage,
+  });
+  if (isLoading) {
+    return (
+      <div className="text-white h-full center">
+        <div className="w-full h-full overflow-y-scroll overflow-x-hidden py-4">
+          <div className="p-2 border-b border-white-l/10 my-0 text-sm">
+            <Skeleton width={100} height={20} />
+          </div>
+          <List sx={{ width: "100%" }} className="p-0">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="hover:bg-dull-black/10 duration-75">
+                <ListItem alignItems="center" className="mr-2 py-4">
+                  <ListItemAvatar>
+                    <Skeleton variant="circular">
+                      <Avatar />
+                    </Skeleton>
+                  </ListItemAvatar>
+                  <div className="ml-4 w-full">
+                    <Skeleton width="40%" height={20} />
+                  </div>
+                </ListItem>
+                {i !== 5 && (
+                  <Divider
+                    variant="inset"
+                    component="div"
+                    className="border-light-blue/10 w-full m-0"
+                  />
+                )}
+              </div>
+            ))}
+          </List>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div className="text-white">Error fetching users</div>;
+  }
+  return (
+    <div className="w-full h-full overflow-y-scroll overflow-x-hidden py-4">
+      <Typography className="p-2 border-b border-white-l/10 my-0 text-sm">
+        All Friends- {data?.pages[0].total}
+      </Typography>
+      <List sx={{ width: "100%" }} className="p-0">
+        {data?.pages.map((page, pageIndex) => {
+          console.log(page);
+          return (
+            <Fragment key={pageIndex}>
+              {page.friendList.map((user, i) => (
+                <div
+                  key={user.id}
+                  className="hover:bg-dull-black/10 duration-75"
+                >
+                  <ListItem
+                    alignItems="center"
+                    className="mr-2 py-4 justify-between group cursor-pointer"
+                  >
+                    <div className="flex">
+                      <ListItemAvatar>
+                        <Avatar alt={user.username} src={user.profile.avatar} />
+                      </ListItemAvatar>
+                      <ListItemText>{user.username}</ListItemText>
+                    </div>
+                    <div className="btns flex gap-3">
+                      <Tooltip title="chat">
+                        <div className="more rounded-full w-11 h-11 group-hover:bg-dull-black/50 group-hover:text-light-blue duration-75 center">
+                          <ChatBubbleIcon className="text-[17px]" />
+                        </div>
+                      </Tooltip>
+
+                      <Tooltip title="more actions" >
+                        <div className="more rounded-full w-11 h-11 group-hover:bg-dull-black/50 group-hover:text-light-blue duration-75 center">
+                          <MoreVertIcon />
+                        </div>
+                      </Tooltip>
+                    </div>
+                  </ListItem>
+                  {i !== page.friendList.length - 1 && (
+                    <Divider
+                      variant="inset"
+                      component="div"
+                      className="border-light-blue/10 w-full m-0"
+                    />
+                  )}
+                </div>
+              ))}
+            </Fragment>
+          );
+        })}
+      </List>
+
+      {/* Trigger element for infinite scroll */}
+      {hasNextPage && !isFetchingNextPage && (
+        <div ref={loadMoreRef} className="h-1 w-full" />
+      )}
+
+      {/* Loading spinner when fetching next page */}
+      {isFetchingNextPage && (
+        <div className="text-center text-white">
+          <Loading />
+        </div>
+      )}
+    </div>
+  );
 };
 
-export { Nav, AllUsers, AddFriend, AllFriends, OnlineFriends };
+export { Nav, AllUsers, AddFriend, AllFriends, Requests };

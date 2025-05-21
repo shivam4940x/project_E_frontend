@@ -17,8 +17,6 @@ type CurrentUser = {
   profile: { avatar: string };
 };
 
-
-
 type FriendRequestObj = {
   onGoingRequests: {
     id: string;
@@ -43,5 +41,16 @@ type FriendRequestObj = {
     };
   }[];
 };
-
-export type { UserGetAll, CurrentUser, FriendRequestObj };
+type FriendsAll = {
+  friendList: {
+    id: string;
+    username: string;
+    profile: {
+      avatar: string;
+    };
+  }[];
+  total: number;
+  page: number;
+  lastPage: number;
+};
+export type { UserGetAll, CurrentUser, FriendRequestObj, FriendsAll };

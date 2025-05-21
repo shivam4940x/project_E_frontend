@@ -1,4 +1,4 @@
-type DashboardContent = "online" | "all" | "add";
+type DashboardContent = "requests" | "all" | "add";
 
 export type {
     DashboardContent

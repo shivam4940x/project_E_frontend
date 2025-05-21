@@ -3,7 +3,7 @@ import {
   AllFriends,
   AllUsers,
   Nav,
-  OnlineFriends,
+  Requests,
 } from "@/components/pages/Dashboard";
 import type { DashboardContent } from "@/types/SharedProps";
 import { useMemo, useState } from "react";
@@ -11,13 +11,13 @@ import { useMemo, useState } from "react";
 // pages/Dashboard.tsx
 const Dashboard = () => {
   const [currentContent, setCurrentContent] =
-    useState<DashboardContent>("online");
+    useState<DashboardContent>("all");
 
   const content = useMemo(
     () => ({
-      add: <AddFriend />,
       all: <AllFriends />,
-      online: <OnlineFriends />,
+      add: <AddFriend />,
+      requests: <Requests />,
     }),
     []
   );
