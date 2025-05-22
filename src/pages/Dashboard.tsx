@@ -1,17 +1,12 @@
-import {
-  AddFriend,
-  AllFriends,
-  AllUsers,
-  Nav,
-  Requests,
-} from "@/components/pages/Dashboard";
+import { AddFriend, Nav } from "@/components/pages/Dashboard/Index";
+import { AllFriends, AllUsers } from "@/components/pages/Dashboard/lists";
+import Requests from "@/components/pages/Dashboard/Requests";
 import type { DashboardContent } from "@/types/SharedProps";
 import { useMemo, useState } from "react";
 
 // pages/Dashboard.tsx
 const Dashboard = () => {
-  const [currentContent, setCurrentContent] =
-    useState<DashboardContent>("all");
+  const [currentContent, setCurrentContent] = useState<DashboardContent>("all");
 
   const content = useMemo(
     () => ({
@@ -24,7 +19,7 @@ const Dashboard = () => {
   return (
     <>
       <div className="w-full h-14 ">
-        <nav className="w-full h-full">
+        <nav className="div">
           <Nav setContent={setCurrentContent} currentContent={currentContent} />
         </nav>
       </div>

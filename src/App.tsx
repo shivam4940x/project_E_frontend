@@ -15,7 +15,7 @@ const App = () => {
   return (
     <Suspense
       fallback={
-        <div className="h-screen w-full center text-white bg-[#213448]">
+        <div className="h-screen w-full center text-white bg-dull-black/10">
           <Loading />
         </div>
       }

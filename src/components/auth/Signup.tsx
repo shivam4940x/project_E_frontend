@@ -34,7 +34,6 @@ const SignupForm: FC = () => {
       );
 
       const response = await axiosInstance.post("/auth/signup", request);
-      console.log(response);
       if (
         response?.data.message &&
         response?.data.message.toLowerCase() === "signup successful"

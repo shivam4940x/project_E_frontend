@@ -96,7 +96,17 @@ const useFriend = () => {
     },
     onError,
   });
-
+  const removeFriend = useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const res = await FriendService.delete(id);
+      console.log(res.data);
+      return res
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
+    },
+    onError,
+  });
   return {
     addFriend: addFriendMutation.mutate,
     addFriendStatus: {
@@ -104,6 +114,7 @@ const useFriend = () => {
       isSuccess: addFriendMutation.isSuccess,
       isError: addFriendMutation.isError,
     },
+    remove: removeFriend.mutate,
     //get friends
     useInfinty: (
       limit: number = 5
@@ -118,7 +129,6 @@ const useFriend = () => {
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
           const totalFetched = allPages.reduce((acc, page) => {
-            console.log(page);
             return acc + page.friendList.length;
           }, 0);
           return totalFetched < lastPage.total

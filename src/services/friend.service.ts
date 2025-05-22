@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios";
 import type {
-  CurrentUser,
+  // CurrentUser,
   FriendRequestObj,
   FriendsAll,
 } from "@/types/Response";
@@ -15,9 +15,9 @@ const FriendService = {
     return friendServiceCrud.getAll(page, limit);
   },
 
-  get: (): Promise<AxiosResponse<CurrentUser>> => {
-    return friendServiceCrud.get();
-  },
+  // get: (): Promise<AxiosResponse<CurrentUser>> => {
+  //   return friendServiceCrud.get();
+  // },
 
   sendRequest: (id: string): Promise<AxiosResponse<{ message: string }>> => {
     return axiosInstance.post("/friend/request/send", {
@@ -45,6 +45,9 @@ const FriendService = {
     return axiosInstance.put("/friend/request/reject", {
       id,
     });
+  },
+  delete: (id: string): Promise<AxiosResponse<{ message: string }>> => {
+    return friendServiceCrud.delete(id);
   },
 };
 

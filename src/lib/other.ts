@@ -26,4 +26,33 @@ const copyText = async (id: string) => {
       toast.error("Error copying text");
     });
 };
-export { debounce, wait, copyText };
+
+function timeAgo(dateString: string): string {
+  const now = new Date();
+  const updated = new Date(dateString);
+  const diff = Math.floor((now.getTime() - updated.getTime()) / 1000);
+
+  const times = [
+    { unit: "year", seconds: 31536000 },
+    { unit: "month", seconds: 2592000 },
+    { unit: "week", seconds: 604800 },
+    { unit: "day", seconds: 86400 },
+    { unit: "hour", seconds: 3600 },
+    { unit: "minute", seconds: 60 },
+    { unit: "second", seconds: 1 },
+  ];
+
+  for (const t of times) {
+    const value = Math.floor(diff / t.seconds);
+    if (value >= 1) {
+      return new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
+        -value,
+        t.unit as Intl.RelativeTimeFormatUnit
+      );
+    }
+  }
+
+  return "just now";
+}
+
+export { debounce, wait, copyText, timeAgo };
