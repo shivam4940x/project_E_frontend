@@ -16,7 +16,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { useUsers } from "@/hooks/useUsers";
 import { useFriend } from "@/hooks/useFriend";
 import { Fragment, useRef, type RefObject } from "react";
-import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import useIntersectionObserver from "@/hooks/util/useIntersectionObserver";
 import Loading from "../ui/Loading";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Link } from "react-router-dom";
@@ -95,7 +95,7 @@ const Chats = () => {
               {page.friendList.map((user) => (
                 <Link
                   key={user.id}
-                  to={`/chat/${user.id}`}
+                  to={`/c/${user.chatId}`}
                   className="hover:bg-white-l/10 duration-75"
                 >
                   <ListItem

@@ -14,7 +14,7 @@ import {
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import useIntersectionObserver from "@/hooks/util/useIntersectionObserver";
 import Loading from "@/components/ui/Loading";
 
 import { Fragment, useRef, useState } from "react";
@@ -85,8 +85,12 @@ const UserListViewer = ({
 
   return (
     <div className="div overflow-y-scroll overflow-x-hidden py-4">
-      <Typography className="p-2 border-b border-white-l/10 text-sm">
-        {title}
+      <Typography className="p-2 border-b border-white-l/10 text-sm flex ">
+        {type == "friends" ? (
+          <span className="pb-2">{title}</span>
+        ) : (
+          <span className="pb-4 center w-full">{title}</span>
+        )}
       </Typography>
 
       <List sx={{ width: "100%" }} className="p-0">

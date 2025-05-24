@@ -1,9 +1,10 @@
 import Requests from "@/components/pages/Dashboard/Requests";
 import { AddFriend, Nav } from "@/components/pages/Dashboard/Index";
-import { AllFriends, AllUsers } from "@/components/pages/Dashboard/lists";
-import { useMemo, useState } from "react";
+import { AllFriends, AllUsers } from "@/components/pages/Dashboard/List";
+import { useEffect, useMemo, useState } from "react";
 //types
 import type { DashboardContent } from "@/types/SharedProps";
+import axiosInstance from "@/lib/plugins/axios";
 
 // pages/Dashboard.tsx
 const Dashboard = () => {
@@ -17,6 +18,13 @@ const Dashboard = () => {
     }),
     []
   );
+  useEffect(() => {
+    const check = async () => {
+      const response = await axiosInstance.get("/");
+      console.log(response);
+    };
+    console.log(check);
+  }, []);
   return (
     <>
       <div className="w-full h-14 ">

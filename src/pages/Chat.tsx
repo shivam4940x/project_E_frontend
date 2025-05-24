@@ -1,8 +1,11 @@
+import MainChat from "@/components/pages/Chat/Index";
+import { Chatsocket } from "@/lib/plugins/socket";
+import type { Message } from "@/types/SharedProps";
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 
-import { Avatar, Button, TextField } from "@mui/material";
-import { useState } from "react";
+import { Button, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 type FormData = {
@@ -10,12 +13,27 @@ type FormData = {
 };
 
 const Chat = () => {
-  const [chatMessages, setChatMessages] = useState<string[]>([]);
   const { register, handleSubmit, reset } = useForm<FormData>();
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const pathSegments = window.location.pathname.split("/");
+    const conversationId = pathSegments[pathSegments.length - 1];
+    Chatsocket.emit("join", { conversationId });
+    Chatsocket.on("joined", (data) => {
+      console.log("Joined conversation:", data.conversationId);
+    });
+  }, []);
+
+  const sendMessage = (msg: string) => {
+    Chatsocket.emit("send", {
+      content: msg,
+    });
+  };
 
   const onSubmit = (data: FormData) => {
-    if (data.message.trim() !== "") {
-      setChatMessages([...chatMessages, data.message]);
+    if (data && data.message && data.message.trim() !== "") {
+      sendMessage(data.message);
       reset(); // Clear input field
     }
   };
@@ -25,20 +43,8 @@ const Chat = () => {
       <div className="div">
         <main className="flex flex-col h-full py-8 w-full max-w-full overflow-hidden">
           {/* Actual chat */}
-          <div className="grow overflow-hidden px-4 div">
-            <div className="flex flex-col justify-end div">
-              {chatMessages.map((msg, i) => (
-                <div
-                  key={i}
-                  className="text-white mb-2 py-2 px-4 rounded-full  flex"
-                >
-                  <div>
-                    <Avatar src="'" alt="ola" />
-                  </div>
-                  <div className="bg-white/10 break-words">{msg}</div>
-                </div>
-              ))}
-            </div>
+          <div className="grow overflow-hidden px-4 div max-w-full">
+            <MainChat message={chatMessages} setmessage={setChatMessages} />
           </div>
           {/* Input */}
           <div className="max-h-36 border mx-4 rounded-xl border-white/10 bg-dull-black/90 flex items-ecnter">

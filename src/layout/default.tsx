@@ -16,8 +16,8 @@ const DefaulLayout = () => {
         backgroundBlendMode: "overlay",
       }}
     >
-      <div className="flex grow backdrop-blur-xs">
-        <div className="w-sm h-full flex flex-col justify-between ">
+      <div className="grow backdrop-blur-xs grid grid-cols-5">
+        <div className="div flex flex-col justify-between border-r border-white-l/20">
           <div className="grow">
             <Chats />
           </div>
@@ -30,8 +30,7 @@ const DefaulLayout = () => {
             <Settings />
           </div>
         </div>
-        <Divider flexItem orientation="vertical" className="bg-white-l/10" />
-        <div className="div">
+        <div className="div col-span-4">
           <Outlet />
         </div>
       </div>

@@ -10,13 +10,13 @@
   --color-deep-blue: #102e50;
   --color-wine-red: #3a0519;
   --color-light-red: #ef88ad;
-  --color-white: #fbf8ef;
+  --color-white: #e9e6db;
   --color-btn-text-hovored: rgba(100, 105, 123, 0.21);
 }
 body {
   font-family: var(--font-BeVietnamPro);
-  color: var(--color-white);
   background-color: var(--color-paper-black);
+  color: var(--color-white);
 }
 /* WebKit Scrollbar Customization */
 *::-webkit-scrollbar {

@@ -11,7 +11,7 @@ const Login = lazy(() => import("@/pages/Login"));
 
 const App = () => {
   // const pages = [];
-
+  // useSocketLifecycle();
   return (
     <Suspense
       fallback={
@@ -24,8 +24,8 @@ const App = () => {
         {/* Routes that use the DefaultLayout */}
         <Route path="/" element={<DefaultLayout />}>
           {/* Index route (root path "/") */}
-          <Route index element={<Dashboard />} />
-          <Route path="/chat/:id" element={<Chat />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/c/:id" element={<Chat />} />
         </Route>
 
         {/* Standalone routes */}

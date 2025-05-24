@@ -17,7 +17,6 @@ type CurrentUser = {
   profile: { avatar: string };
 };
 
-
 type FriendRequestObj = {
   onGoingRequests: {
     id: string;
@@ -49,6 +48,7 @@ type FriendsAll = {
     profile: {
       avatar: string;
     };
+    chatId: string;
     updatedAt: string;
   }[];
   total: number;

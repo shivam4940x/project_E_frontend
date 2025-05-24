@@ -1,5 +1,11 @@
 type DashboardContent = "requests" | "all" | "add";
-
-export type {
-    DashboardContent
-}
+type Message = {
+  content: string;
+  sender: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  sendAt: string;
+};
+export type { DashboardContent, Message };
