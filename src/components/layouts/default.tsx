@@ -19,6 +19,7 @@ import { Fragment, useRef, type RefObject } from "react";
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
 import Loading from "../ui/Loading";
 import ClearIcon from "@mui/icons-material/Clear";
+import { Link } from "react-router-dom";
 
 const Settings = () => {
   // const { user } = useUserStore();
@@ -88,11 +89,15 @@ const Chats = () => {
         <Typography className="mb-2">
           <span className="text-sm px-4 text-gray-300/60">Direct message</span>
         </Typography>
-        <List  className="p-0">
+        <List className="p-0">
           {data?.pages.map((page, pageIndex) => (
             <Fragment key={pageIndex}>
               {page.friendList.map((user) => (
-                <div key={user.id} className="hover:bg-white-l/10 duration-75">
+                <Link
+                  key={user.id}
+                  to={`/chat/${user.id}`}
+                  className="hover:bg-white-l/10 duration-75"
+                >
                   <ListItem
                     alignItems="center"
                     className="mr-2 py-4 justify-between group cursor-pointer"
@@ -106,11 +111,11 @@ const Chats = () => {
 
                     <div className="btns flex gap-3">
                       <Button className="chat rounded-full aspect-square min-w-8 group-hover:flex hidden">
-                        <ClearIcon className="text-sm"/>
+                        <ClearIcon className="text-sm" />
                       </Button>
                     </div>
                   </ListItem>
-                </div>
+                </Link>
               ))}
             </Fragment>
           ))}

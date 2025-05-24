@@ -14,15 +14,17 @@ import {
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import Loading from "@/components/ui/Loading";
+
 import { Fragment, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Loading from "@/components/ui/Loading";
 import { useUsers } from "@/hooks/useUsers";
 import { useFriend } from "@/hooks/useFriend";
+import { copyText } from "@/lib/other";
+//types
 import type { FriendsAll, UserGetAll } from "@/types/Response";
 import type { InfiniteData } from "@tanstack/react-query";
-import { copyText } from "@/lib/other";
-import useIntersectionObserver from "@/hooks/useIntersectionObserver";
 
 interface UserListViewerProps {
   type: "friends" | "users";

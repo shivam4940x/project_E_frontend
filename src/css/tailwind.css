@@ -15,7 +15,7 @@ button {
   @apply cursor-pointer;
 }
 .div{
-  @apply div
+  @apply h-full w-full
 }
 h1,
 h2,

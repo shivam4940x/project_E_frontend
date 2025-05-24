@@ -1,4 +1,4 @@
-import { Button, Divider, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Groups";
 
 //types
@@ -27,11 +27,7 @@ const Nav = ({ setContent, currentContent }: NavProps) => {
           <GroupIcon className="text-white/50 text-base" />
           Friends
         </div>
-        <Divider
-          orientation="vertical"
-          flexItem
-          className="border-red-200/20 my-2 mx-4"
-        />
+        <div className="h-1 w-1 rounded-full bg-white-l/30"></div>
         <ul>
           <li>
             <div className="flex gap-5 capitalize">
