@@ -11,7 +11,7 @@ type UserGetAll = {
   page: number;
   lastPage: number;
 };
-type CurrentUser = {
+type UserObj = {
   id: string;
   username: string;
   profile: { avatar: string };
@@ -55,4 +55,4 @@ type FriendsAll = {
   page: number;
   lastPage: number;
 };
-export type { UserGetAll, CurrentUser, FriendRequestObj, FriendsAll };
+export type { UserGetAll, UserObj, FriendRequestObj, FriendsAll };

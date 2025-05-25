@@ -25,7 +25,7 @@ const App = () => {
         <Route path="/" element={<DefaultLayout />}>
           {/* Index route (root path "/") */}
           <Route path="/" element={<Dashboard />} />
-          <Route path="/c/:id" element={<Chat />} />
+          <Route path="/c/:conversationId" element={<Chat />} />
         </Route>
 
         {/* Standalone routes */}

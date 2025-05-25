@@ -5,7 +5,7 @@ import {
   type UseInfiniteQueryResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import type { CurrentUser, UserGetAll } from "@/types/Response";
+import type { UserObj, UserGetAll } from "@/types/Response";
 import UserService from "../services/user.service";
 
 export const useUsers = () => {
@@ -33,18 +33,26 @@ export const useUsers = () => {
       });
     },
 
-    useCurrentUser: (): UseQueryResult<CurrentUser, Error> => {
-      return useQuery<CurrentUser, Error>({
-        queryKey: ["user"],
+    useCurrentUser: (): UseQueryResult<UserObj, Error> => {
+      return useQuery<UserObj, Error>({
+        queryKey: ["CurrentUser"],
         queryFn: async () => {
           const user = await UserService.get();
           return user.data;
         },
       });
     },
+    GetUser: (id: string): UseQueryResult<UserObj, Error> => {
+      return useQuery<UserObj, Error>({
+        queryKey: ["user"],
+        queryFn: async () => {
+          const user = await UserService.get(id);
+          return user.data;
+        },
+      });
+    },
   };
 };
-
 
 // export const useCurrentUser = async () => {
 //   return await UserService.get();

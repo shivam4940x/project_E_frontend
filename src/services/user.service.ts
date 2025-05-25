@@ -1,9 +1,6 @@
 import type { AxiosResponse } from "axios";
 import CreateCRUD from "./service";
-import type { CurrentUser, UserGetAll } from "@/types/Response";
-
-
-
+import type { UserObj, UserGetAll } from "@/types/Response";
 // Instantiate CRUD with correct payload type
 const UserServiceCrud = new CreateCRUD("/user");
 
@@ -12,10 +9,13 @@ const UserService = {
     return UserServiceCrud.getAll(page, limit);
   },
 
-  get: (): Promise<AxiosResponse<CurrentUser>> => {
-    return UserServiceCrud.get();
+  get: (id?: string): Promise<AxiosResponse<UserObj>> => {
+    if (id) {
+      return UserServiceCrud.getById(id);
+    } else {
+      return UserServiceCrud.get();
+    }
   },
-
 };
 
 export default UserService;

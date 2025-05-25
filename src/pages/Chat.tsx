@@ -5,45 +5,70 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 
 import { Button, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 
-type FormData = {
-  message: string;
-};
+type FormData = { content: string; conversationId: string };
 
 const Chat = () => {
   const { register, handleSubmit, reset } = useForm<FormData>();
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
 
+  const currentConversationRef = useRef<string | null>(null);
+
+  const { conversationId } = useParams<{ conversationId: string }>();
+
   useEffect(() => {
-    const pathSegments = window.location.pathname.split("/");
-    const conversationId = pathSegments[pathSegments.length - 1];
-    Chatsocket.emit("join", { conversationId });
+    if (!conversationId) {
+      return;
+    }
+
+    // Leave previous room
+    if (
+      currentConversationRef.current &&
+      currentConversationRef.current !== conversationId
+    ) {
+      Chatsocket.emit("leave", {
+        conversationId: currentConversationRef.current,
+      });
+    }
+
+    // Join new room
+    if (currentConversationRef.current !== conversationId) {
+      Chatsocket.emit("join", { conversationId });
+      currentConversationRef.current = conversationId;
+    }
+
     Chatsocket.on("joined", (data) => {
       console.log("Joined conversation:", data.conversationId);
     });
-  }, []);
+
+    return () => {
+      setChatMessages([]);
+      Chatsocket.off("joined");
+    };
+  }, [conversationId]);
 
   const sendMessage = (msg: string) => {
     Chatsocket.emit("send", {
       content: msg,
+      conversationId,
     });
   };
-
   const onSubmit = (data: FormData) => {
-    if (data && data.message && data.message.trim() !== "") {
-      sendMessage(data.message);
+    if (data && data.content && data.content.trim() !== "") {
+      sendMessage(data.content);
       reset(); // Clear input field
     }
   };
 
   return (
     <div className="div">
-      <div className="div">
-        <main className="flex flex-col h-full py-8 w-full max-w-full overflow-hidden">
+      <div className="div ">
+        <main className="flex flex-col h-full pb-8 w-full max-w-full">
           {/* Actual chat */}
-          <div className="grow overflow-hidden px-4 div max-w-full">
+          <div className="grow px-4 div max-w-full max-h-full h-full overflow-y-scroll">
             <MainChat message={chatMessages} setmessage={setChatMessages} />
           </div>
           {/* Input */}
@@ -59,7 +84,7 @@ const Chat = () => {
               className="grow pr-4 flex justify-between"
             >
               <TextField
-                {...register("message")}
+                {...register("content")}
                 placeholder="Type your message..."
                 variant="standard"
                 multiline

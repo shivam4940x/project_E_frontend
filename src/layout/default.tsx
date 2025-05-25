@@ -16,7 +16,7 @@ const DefaulLayout = () => {
         backgroundBlendMode: "overlay",
       }}
     >
-      <div className="grow backdrop-blur-xs grid grid-cols-5">
+      <div className="grow backdrop-blur-xs grid grid-cols-5 grid-rows-1">
         <div className="div flex flex-col justify-between border-r border-white-l/20">
           <div className="grow">
             <Chats />
@@ -30,7 +30,7 @@ const DefaulLayout = () => {
             <Settings />
           </div>
         </div>
-        <div className="div col-span-4">
+        <div className="div col-span-4 max-h-screen  overflow-x-hidden">
           <Outlet />
         </div>
       </div>

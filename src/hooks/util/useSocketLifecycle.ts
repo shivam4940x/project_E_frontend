@@ -6,9 +6,6 @@ export const useSocketLifecycle = () => {
   useEffect(() => {
     Chatsocket.connect(); // Ensure connection
 
-    // Optional: emit user-connected or join-room events here
-    // socket.emit("user_joined", { userId });
-
     const cleanup = () => {
       // Optional: emit disconnect-related events
       // socket.emit("user_disconnected", { userId });

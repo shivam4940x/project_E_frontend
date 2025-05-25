@@ -1,27 +1,29 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useUsers } from "@/hooks/useUsers";
 import { Chatsocket } from "@/lib/plugins/socket";
-import type { Message } from "@/types/SharedProps";
 import { Avatar } from "@mui/material";
-import { useEffect, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+
+import type { UserObj } from "@/types/Response";
+import type { Message } from "@/types/SharedProps";
 
 interface MainChatProps {
   message: Message[];
   setmessage: Dispatch<SetStateAction<Message[]>>;
 }
 const MainChat = ({ message, setmessage }: MainChatProps) => {
+  const [CurrentUser, setCurrentUser] = useState<UserObj | null>(null);
+
+  const { data: user } = useUsers().useCurrentUser();
+
+  if (!CurrentUser && user) {
+    setCurrentUser(user);
+  }
+
   useEffect(() => {
-    Chatsocket.on("receive", (data: any) => {
+    Chatsocket.on("receive", (data: Message) => {
       console.log(data);
-      const x: Message = {
-        sendAt: "send at",
-        sender: {
-          id: "id",
-          avatar: "av",
-          name: "name",
-        },
-        content: data.data,
-      };
-      setmessage((prev) => [...prev, x]);
+      setmessage((prev) => [...prev, data]);
     });
 
     return () => {
@@ -30,7 +32,10 @@ const MainChat = ({ message, setmessage }: MainChatProps) => {
   }, [setmessage]);
 
   return (
-    <div className="flex flex-col justify-end div max-w-full">
+    <div
+      id="chatWrapper"
+      className="flex flex-col justify-end min-h-full max-w-full h-max"
+    >
       {message.map((msg, i) => (
         <div
           key={i}
@@ -41,9 +46,9 @@ const MainChat = ({ message, setmessage }: MainChatProps) => {
           </div>
           <div className="break-words">
             <div className="flex space-x-3 items-center">
-              <h6 className="">{msg.sender.name}</h6>
+              <h6 className="">{"oal"}</h6>
               <span className="font-light text-gray-200/50 text-xs">
-                {msg.sendAt}
+                {msg.createdAt}
               </span>
             </div>
             <div className="">{msg.content}</div>

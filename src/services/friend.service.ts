@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios";
 import type {
-  // CurrentUser,
+  // UserObj,
   FriendRequestObj,
   FriendsAll,
 } from "@/types/Response";
@@ -15,7 +15,7 @@ const FriendService = {
     return friendServiceCrud.getAll(page, limit);
   },
 
-  // get: (): Promise<AxiosResponse<CurrentUser>> => {
+  // get: (): Promise<AxiosResponse<UserObj>> => {
   //   return friendServiceCrud.get();
   // },
 
