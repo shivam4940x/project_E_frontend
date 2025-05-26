@@ -18,7 +18,9 @@ class CreateCRUD {
   async getById(id: string): Promise<AxiosResponse> {
     return axiosInstance.get(`${this.path}/${id}`);
   }
+
   async getAll(page = 1, limit = 5): Promise<AxiosResponse> {
+
     return axiosInstance.get(this.url("all"), { params: { page, limit } });
   }
 

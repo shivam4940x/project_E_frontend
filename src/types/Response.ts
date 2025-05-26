@@ -1,3 +1,5 @@
+import type { Message } from "./SharedProps";
+
 type UserGetAll = {
   users: {
     id: string;
@@ -55,4 +57,12 @@ type FriendsAll = {
   page: number;
   lastPage: number;
 };
-export type { UserGetAll, UserObj, FriendRequestObj, FriendsAll };
+
+type MessageAll = {
+  messages: Message[];
+  total: number;
+  page: number;
+  lastPage: number;
+};
+
+export type { UserGetAll, UserObj, FriendRequestObj, FriendsAll, MessageAll };

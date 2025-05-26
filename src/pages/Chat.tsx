@@ -1,30 +1,61 @@
 import MainChat from "@/components/pages/Chat/Index";
+import { useChat } from "@/hooks/useChat";
+import useIntersectionObserver from "@/hooks/util/useIntersectionObserver";
 import { Chatsocket } from "@/lib/plugins/socket";
+import type { UserObj } from "@/types/Response";
 import type { Message } from "@/types/SharedProps";
+
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
-
 import { Button, TextField } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 
-type FormData = { content: string; conversationId: string };
+type FormData = { content: string };
 
 const Chat = () => {
   const { register, handleSubmit, reset } = useForm<FormData>();
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const { conversationId } = useParams<{ conversationId: string }>();
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const { useInfinty } = useChat();
+
+  const [participants, setParticipants] = useState<UserObj[]>([]);
+  const [liveMessages, setLiveMessages] = useState<Message[]>([]);
 
   const currentConversationRef = useRef<string | null>(null);
 
-  const { conversationId } = useParams<{ conversationId: string }>();
+  const {
+    data: chat,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useInfinty(50, conversationId);
+
+  const historicalMessages = useMemo(
+    () => chat?.pages.flatMap((page) => page.messages).reverse() ?? [],
+    [chat]
+  );
+
+  const allMessages = useMemo(
+    () => [...historicalMessages, ...liveMessages],
+    [historicalMessages, liveMessages]
+  );
+
+  useIntersectionObserver({
+    targetRef: loadMoreRef as React.RefObject<HTMLElement>,
+    onIntersect: () => {
+      if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+    },
+    enabled: hasNextPage && !isFetchingNextPage,
+  });
 
   useEffect(() => {
-    if (!conversationId) {
-      return;
-    }
+    if (!conversationId) return;
 
-    // Leave previous room
+    // Leave old room
     if (
       currentConversationRef.current &&
       currentConversationRef.current !== conversationId
@@ -35,90 +66,107 @@ const Chat = () => {
     }
 
     // Join new room
-    if (currentConversationRef.current !== conversationId) {
-      Chatsocket.emit("join", { conversationId });
-      currentConversationRef.current = conversationId;
-    }
+    Chatsocket.emit("join", { conversationId });
+    currentConversationRef.current = conversationId;
 
-    Chatsocket.on("joined", (data) => {
-      console.log("Joined conversation:", data.conversationId);
-    });
+    const handleJoined = (data: {
+      success: boolean;
+      participants: UserObj[];
+    }) => {
+      if (data.success) {
+        setParticipants(data.participants);
+      } else {
+        console.error("Failed to join conversation:", data);
+      }
+    };
+
+    const handleNewMessage = (msg: Message) => {
+      setLiveMessages((prev) => [...prev, msg]);
+    };
+
+    Chatsocket.on("joined", handleJoined);
+    Chatsocket.on("message", handleNewMessage);
 
     return () => {
-      setChatMessages([]);
-      Chatsocket.off("joined");
+      Chatsocket.emit("leave", { conversationId });
+      Chatsocket.off("joined", handleJoined);
+      Chatsocket.off("message", handleNewMessage);
+      setLiveMessages([]);
     };
   }, [conversationId]);
 
-  const sendMessage = (msg: string) => {
-    Chatsocket.emit("send", {
-      content: msg,
-      conversationId,
-    });
-  };
   const onSubmit = (data: FormData) => {
-    if (data && data.content && data.content.trim() !== "") {
-      sendMessage(data.content);
-      reset(); // Clear input field
+    if (data?.content?.trim()) {
+      Chatsocket.emit("send", {
+        content: data.content,
+        conversationId,
+      });
+      reset();
     }
   };
 
+  if (isLoading) return <div>Loading chat...</div>;
+  if (isError) return <div>Error loading chat.</div>;
+
   return (
     <div className="div">
-      <div className="div ">
-        <main className="flex flex-col h-full pb-8 w-full max-w-full">
-          {/* Actual chat */}
-          <div className="grow px-4 div max-w-full max-h-full h-full overflow-y-scroll">
-            <MainChat message={chatMessages} setmessage={setChatMessages} />
+      <main className="flex flex-col h-full pb-8 w-full max-w-full">
+        {/* Chat messages */}
+        <div className="grow px-4 max-w-full max-h-full h-full overflow-y-scroll">
+          <div ref={loadMoreRef} />
+          <MainChat
+            message={allMessages}
+            setmessage={setLiveMessages}
+            participants={participants}
+          />
+        </div>
+
+        {/* Input */}
+        <div className="max-h-36 border mx-4 rounded-xl border-white/10 bg-dull-black/90 flex items-center">
+          <div className="p-2 flex items-end h-full">
+            <Button className="aspect-square h-10 min-w-0 rounded-full bg-paper-black/20 p-2">
+              <AddCircleRoundedIcon className="div" />
+            </Button>
           </div>
-          {/* Input */}
-          <div className="max-h-36 border mx-4 rounded-xl border-white/10 bg-dull-black/90 flex items-ecnter">
-            <div className="p-2 flex items-end h-full">
-              <Button className="aspect-square h-10 min-w-0 rounded-full bg-paper-black/20 p-2">
-                <AddCircleRoundedIcon className="div" />
+
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="grow pr-4 flex justify-between items-center"
+          >
+            <TextField
+              {...register("content")}
+              placeholder="Type your message..."
+              variant="standard"
+              multiline
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(onSubmit)();
+                }
+              }}
+              minRows={1}
+              maxRows={6}
+              slotProps={{
+                input: {
+                  disableUnderline: true,
+                  autoComplete: "off",
+                  spellCheck: "false",
+                  className: "text-amber-50 break-words resize-none h-full",
+                },
+              }}
+              className="text-amber-50 w-full break-words h-full"
+            />
+            <div className="p-2 h-full">
+              <Button
+                className="aspect-square h-10 min-w-0 rounded-full bg-paper-black/20 p-2"
+                type="submit"
+              >
+                <SendRoundedIcon className="div" />
               </Button>
             </div>
-
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="grow pr-4 flex justify-between"
-            >
-              <TextField
-                {...register("content")}
-                placeholder="Type your message..."
-                variant="standard"
-                multiline
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmit(onSubmit)();
-                  }
-                }}
-                minRows={1}
-                maxRows={6}
-                slotProps={{
-                  input: {
-                    disableUnderline: true,
-                    autoComplete: "off",
-                    spellCheck: "false",
-                    className: "text-amber-50 break-words resize-none h-full",
-                  },
-                }}
-                className="text-amber-50 w-full break-words h-full"
-              />
-              <div className="p-2 h-full">
-                <Button
-                  className="aspect-square h-10 min-w-0 rounded-full bg-paper-black/20 p-2"
-                  type="submit"
-                >
-                  <SendRoundedIcon className="div" />
-                </Button>
-              </div>
-            </form>
-            {/* <div className="other w-20"></div> */}
-          </div>
-        </main>
-      </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 };

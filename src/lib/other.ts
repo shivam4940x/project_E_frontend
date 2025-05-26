@@ -54,5 +54,32 @@ function timeAgo(dateString: string): string {
 
   return "just now";
 }
+const formatChatTimestamp = (isoString: string): string => {
+  const date = new Date(isoString);
+  const now = new Date();
 
-export { debounce, wait, copyText, timeAgo };
+  const isToday = date.toDateString() === now.toDateString();
+
+  const yesterday = new Date();
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  const time = date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  if (isToday) return time;
+  if (isYesterday) return "Yesterday: " + time;
+
+  const datePart = `${date.getDate().toString().padStart(2, "0")}/${(
+    date.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}/${date.getFullYear().toString().slice(-2)}`;
+
+  return `${datePart}, ${time}`;
+};
+
+export { debounce, wait, copyText, timeAgo, formatChatTimestamp };
