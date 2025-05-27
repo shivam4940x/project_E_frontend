@@ -23,7 +23,7 @@ const Dashboard = () => {
       const response = await axiosInstance.get("/");
       console.log(response);
     };
-    console.log(check);
+    check();
   }, []);
   return (
     <>

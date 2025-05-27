@@ -70,8 +70,8 @@ const formatChatTimestamp = (isoString: string): string => {
     hour12: true,
   });
 
-  if (isToday) return time;
-  if (isYesterday) return "Yesterday: " + time;
+  if (isToday) return `Today  ${time}`;
+  if (isYesterday) return "Yesterday:  " + time;
 
   const datePart = `${date.getDate().toString().padStart(2, "0")}/${(
     date.getMonth() + 1

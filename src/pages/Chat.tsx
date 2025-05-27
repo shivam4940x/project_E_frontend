@@ -1,8 +1,8 @@
 import MainChat from "@/components/pages/Chat/Index";
 import { useChat } from "@/hooks/useChat";
+import { useParticipants } from "@/hooks/useParticipants";
 import useIntersectionObserver from "@/hooks/util/useIntersectionObserver";
 import { Chatsocket } from "@/lib/plugins/socket";
-import type { UserObj } from "@/types/Response";
 import type { Message } from "@/types/SharedProps";
 
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
@@ -15,15 +15,16 @@ import { useParams } from "react-router-dom";
 type FormData = { content: string };
 
 const Chat = () => {
+  const { useInfinty } = useChat();
   const { register, handleSubmit, reset } = useForm<FormData>();
   const { conversationId } = useParams<{ conversationId: string }>();
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-  const { useInfinty } = useChat();
-
-  const [participants, setParticipants] = useState<UserObj[]>([]);
-  const [liveMessages, setLiveMessages] = useState<Message[]>([]);
+  const { data: participants = [], isFetching: loadingParticipants } =
+    useParticipants(conversationId);
 
   const currentConversationRef = useRef<string | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const [liveMessages, setLiveMessages] = useState<Message[]>([]);
 
   const {
     data: chat,
@@ -69,27 +70,14 @@ const Chat = () => {
     Chatsocket.emit("join", { conversationId });
     currentConversationRef.current = conversationId;
 
-    const handleJoined = (data: {
-      success: boolean;
-      participants: UserObj[];
-    }) => {
-      if (data.success) {
-        setParticipants(data.participants);
-      } else {
-        console.error("Failed to join conversation:", data);
-      }
-    };
-
     const handleNewMessage = (msg: Message) => {
       setLiveMessages((prev) => [...prev, msg]);
     };
 
-    Chatsocket.on("joined", handleJoined);
     Chatsocket.on("message", handleNewMessage);
 
     return () => {
       Chatsocket.emit("leave", { conversationId });
-      Chatsocket.off("joined", handleJoined);
       Chatsocket.off("message", handleNewMessage);
       setLiveMessages([]);
     };
@@ -112,13 +100,19 @@ const Chat = () => {
     <div className="div">
       <main className="flex flex-col h-full pb-8 w-full max-w-full">
         {/* Chat messages */}
-        <div className="grow px-4 max-w-full max-h-full h-full overflow-y-scroll">
-          <div ref={loadMoreRef} />
-          <MainChat
-            message={allMessages}
-            setmessage={setLiveMessages}
-            participants={participants}
-          />
+        <div className="grow max-w-full max-h-full h-full overflow-y-scroll flex flex-col-reverse">
+          {loadingParticipants ? (
+            <div></div>
+          ) : (
+            <>
+              <MainChat
+                message={allMessages}
+                setmessage={setLiveMessages}
+                participants={participants}
+              />
+              <div ref={loadMoreRef}></div>
+            </>
+          )}
         </div>
 
         {/* Input */}

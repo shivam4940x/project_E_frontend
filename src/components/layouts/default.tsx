@@ -19,7 +19,8 @@ import { Fragment, useRef, type RefObject } from "react";
 import useIntersectionObserver from "@/hooks/util/useIntersectionObserver";
 import Loading from "../ui/Loading";
 import ClearIcon from "@mui/icons-material/Clear";
-import { Link } from "react-router-dom";
+import GroupIcon from "@mui/icons-material/Groups";
+import { Link, useLocation } from "react-router-dom";
 
 const Settings = () => {
   // const { user } = useUserStore();
@@ -49,6 +50,7 @@ const Settings = () => {
 const Chats = () => {
   const { useInfinty } = useFriend();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const location = useLocation();
   const {
     data,
     fetchNextPage,
@@ -79,10 +81,26 @@ const Chats = () => {
   }
   return (
     <div className="">
-      <div className="bg-black/10 px-3 py-4">
-        <Button className="center w-full h-8 bg-white-l/10 rounded-md">
-          search chat
-        </Button>
+      <div>
+        <div className="bg-black/10 px-3 py-4 border-b border-white-l/10">
+          <Button className="center w-full h-8 bg-white-l/10 rounded-md">
+            search chat
+          </Button>
+        </div>
+        <div className="">
+          <div className="bg-black/10 px-3 py-4">
+            <Link to="/">
+              <Button
+                className={`flex justify-start gap-5 px-4 w-full h-12 hover:bg-white-l/10 rounded-xl duration-75 ${
+                  location.pathname == "/" ? "bg-white-l/10" : ""
+                }`}
+              >
+                <GroupIcon className="text-white/50 text-xl" />
+                <span>Friends</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
       <Divider flexItem orientation="horizontal" className="bg-white-l/10" />
       <div id="chat_list" className=" py-5">
