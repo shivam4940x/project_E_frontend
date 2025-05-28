@@ -101,7 +101,7 @@ const LoginForm: FC = () => {
   }, [location, navigate]);
   useEffect(() => {});
   return (
-    <Card className="bg-inherit shadow-none div center">
+    <Card className="bg-inherit shadow-none div md:flex justify-center items-center">
       <CardContent className="md:p-6 p-4">
         <Typography
           variant="h4"

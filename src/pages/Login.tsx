@@ -26,7 +26,7 @@ const Login = () => {
       animate(target, {
         x: move,
         duration,
-        ease: "out(4)",
+        ease: "outQuint",
       });
     };
 
@@ -59,7 +59,7 @@ const Login = () => {
       className="flex items-center justify-center min-h-screen h-screen bg-gray-100 dark:bg-[#06202B] "
       ref={root}
     >
-      <div className="w-full max-w-4xl max-h-screen md:mb-20 mt-10 md:h-9/12 h-10/12 bg-deep-blue mx-5 flex flex-col rounded-xl overflow-hidden">
+      <div className="w-full max-w-4xl h-max py-4 md:mb-20 mt-10 md:h-9/12 max-h-10/12 bg-deep-blue mx-5 flex flex-col rounded-xl overflow-hidden">
         <div className="grid-cols-2 w-full relative grow overflow-hidden hidden md:flex">
           <div className="div overflow-y-scroll">
             {currentScreen === "login" && <LoginForm />}
@@ -115,7 +115,7 @@ const Login = () => {
             {currentScreen === "login" ? <LoginForm /> : <SignupForm />}
           </div>
         </div>
-        <div className="px-2 py-1 md:hidden h-14 mb-2">
+        <div className="px-4 pt-1 md:hidden h-14 mb-2">
           <div className="bg-light-blue div relative flex rounded-xl">
             <div className="absolute w-1/2 h-full right-0 p-1 mode_bg">
               <div className="bg-deep-blue z-10 div rounded-lg"></div>
