@@ -67,7 +67,7 @@ const Error404: React.FC = () => {
 
         {/* Button */}
         <a
-          href="/dashboard"
+          href="/"
           className="text-inherit no-underline border border-yellow-400 text-[18px] sm:text-[16px] font-extralight px-6 py-3 sm:px-5 sm:py-3 rounded-xl shadow-[0px_7px_0px_-2px_#faca2e] transition-all duration-300 hover:bg-yellow-400 hover:text-white hover:shadow-none capitalize"
         >
           back to home

@@ -23,54 +23,56 @@ interface GroupedMessage {
 }
 const MainChat = ({ message, setmessage, participants }: MainChatProps) => {
   useEffect(() => {
-    Chatsocket.on("receive", (data: Message) => {
+    const handler = (data: Message) => {
       setmessage((prev) => [...prev, data]);
-    });
+    };
 
+    Chatsocket.on("receive", handler);
     return () => {
-      Chatsocket.off("receive");
+      Chatsocket.off("receive", handler);
     };
   }, [setmessage]);
 
-  const groupedMesage = useMemo(() => {
-    const x: GroupedMessage[] = [];
+  const groupedMessages = useMemo(() => {
+    const groups: GroupedMessage[] = [];
 
-    const l = message.length;
-    for (let i = 0; i < l; i++) {
+    for (let i = 0; i < message.length; i++) {
       const msg = message[i];
-      const prevMsg = message[i - 1] ?? {};
-
+      const prevMsg = message[i - 1];
       const user = participants.find((p) => p.id === msg.senderId);
-      const isDifferentSender = msg.senderId !== prevMsg?.senderId;
       const timeDiff = prevMsg
         ? new Date(msg.createdAt).getTime() -
           new Date(prevMsg.createdAt).getTime()
         : Infinity;
 
-      const isNewSender = i === 0 || isDifferentSender || timeDiff > 60000;
+      const isNewGroup =
+        i === 0 || msg.senderId !== prevMsg?.senderId || timeDiff > 60000;
 
-      if (isNewSender && msg && user) {
-        const obj: GroupedMessage = {
-          id: msg.id || "",
-          sender: user as UserObj,
-          content: [
-            {
-              value: msg.content,
-              createdAt: msg.createdAt,
-            },
-          ],
-          createdAt: msg.createdAt || "",
-        };
-        x.push(obj);
-      } else if (x.length > 0) {
-        x[x.length - 1].content.push({
-          value: msg.content,
+      if (isNewGroup && user) {
+        groups.push({
+          id: msg.id,
+          sender: user,
+          content: [{ value: msg.content, createdAt: msg.createdAt }],
           createdAt: msg.createdAt,
         });
+      } else if (groups.length > 0) {
+        const lastGroup = groups[groups.length - 1];
+
+        // 🧠 De-dupe safeguard
+        const alreadyExists = lastGroup.content.some(
+          (m) => m.createdAt === msg.createdAt && m.value === msg.content
+        );
+
+        if (!alreadyExists) {
+          lastGroup.content.push({
+            value: msg.content,
+            createdAt: msg.createdAt,
+          });
+        }
       }
     }
 
-    return x;
+    return groups;
   }, [message, participants]);
 
   return (
@@ -78,23 +80,29 @@ const MainChat = ({ message, setmessage, participants }: MainChatProps) => {
       id="chatWrapper"
       className="flex flex-col justify-end min-h-full max-w-full h-max py-2"
     >
-      {groupedMesage.map((msg) => {
+      {groupedMessages.map((msg) => {
         const user = msg.sender;
+
         return (
           <div key={msg.id} className={"max-w-full py-2"}>
             <div className="w-full">
               {msg.content.map((m, i) => {
-                if (i === 0) {
+                const key = `${msg.id}-${m.createdAt}-${i}`;
+                if (i == 0) {
                   return (
                     <div
-                      key={i}
+                      key={key}
                       className="hover:bg-white-l/10 flex gap-x-4 pl-4"
                     >
                       <div className="mt-1 h-11 center">
                         <Avatar
-                          src={user?.profile.avatar}
-                          alt={user?.username}
+                          src={msg.sender.profile.avatar}
+                          alt={msg.sender.username}
                           sizes="40px"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "/default-avatar.png";
+                          }}
                         />
                       </div>
 
@@ -114,7 +122,7 @@ const MainChat = ({ message, setmessage, participants }: MainChatProps) => {
                 } else {
                   return (
                     <div
-                      key={i}
+                      key={key}
                       className="hover:bg-white-l/10 py-px w-full flex group"
                     >
                       <div className="w-18 text-xs group-hover:opacity-100 opacity-0 text-white-l/50 h-6 center">

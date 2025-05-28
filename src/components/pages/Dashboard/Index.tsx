@@ -120,7 +120,7 @@ const AddFriend = () => {
           className={`normal-case my-3 mx-4  ${
             isDisabled ? "!cursor-not-allowed pointer-events-auto" : ""
           }`}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isDisabled}
           sx={{ textTransform: "none" }}
         >
           Send Friend Request

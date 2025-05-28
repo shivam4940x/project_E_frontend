@@ -1,12 +1,14 @@
 import axios, { AxiosError } from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+
 interface RefreshResponse {
   accessToken: string;
   refreshToken: string;
 }
+const baseURL = import.meta.env.VITE_BACKEND + "/api";
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL,
   timeout: 5000,
 });
 
@@ -81,9 +83,9 @@ axiosInstance.interceptors.response.use(
 
       try {
         const response = await axios.post<RefreshResponse>(
-          "http://localhost:3000/api/auth/token/refresh",
+          `${baseURL}/auth/token/refresh`,
           {
-            refreshToken
+            refreshToken,
           }
         );
 
@@ -91,7 +93,7 @@ axiosInstance.interceptors.response.use(
 
         localStorage.setItem("jwt", accessToken);
         localStorage.setItem("refresh_token", newRefreshToken);
-        console.log('Token refreshed');
+        console.log("Token refreshed");
         onTokenRefreshed(accessToken);
 
         if (originalRequest.headers) {

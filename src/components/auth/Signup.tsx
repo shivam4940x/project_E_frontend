@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from "react-hook-form";
-import { useEffect, useState, type FC } from "react";
+import { memo, useEffect, useState, type FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button, Card, CardContent, Divider, Typography } from "@mui/material";
@@ -111,7 +111,7 @@ const SignupForm: FC = () => {
   
 
   const handleGoogleLogin = async () => {
-    window.location.href = "http://localhost:3000/api/auth/google/signup";
+    window.location.href = `${import.meta.env.VITE_BACKEND}/api/auth/google/signup`;
   };
 
   useEffect(() => {
@@ -129,10 +129,10 @@ const SignupForm: FC = () => {
   }, [location, navigate]);
   return (
     <Card className="bg-inherit shadow-none overflow-scroll max-h-screen">
-      <CardContent className="p-6">
+      <CardContent className="md:p-6 p-4">
         <Typography
           variant="h4"
-          className="mb-8 space-x-4 border-b border-light-blue p-2 text-left text-light-blue flex items-center"
+          className="md:mb-8 mb-4 space-x-4 border-b border-light-blue p-2 text-left text-light-blue flex items-center"
         >
           <PersonAddAltIcon /> <span>Signup</span>
         </Typography>
@@ -219,4 +219,4 @@ const SignupForm: FC = () => {
     </Card>
   );
 };
-export default SignupForm;
+export default memo(SignupForm);
