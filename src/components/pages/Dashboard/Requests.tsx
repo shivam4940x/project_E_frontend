@@ -35,7 +35,7 @@ const RequestSection: FC<RequestSectionProps> = ({ title, type, requests }) => {
     <div className="space-y-4" id={`${type}_Requests`}>
       <Typography
         variant="h5"
-        className="border-b border-white-l/10 py-2 h-12 flex items-end px-1"
+        className="border-b border-white-l/10 py-2 h-12 flex items-end px-3 lg:px-1"
       >
         <span>{title}</span>
       </Typography>
@@ -54,7 +54,7 @@ const RequestSection: FC<RequestSectionProps> = ({ title, type, requests }) => {
           return (
             <div
               key={req.id}
-              className="hover:bg-dull-black/10 duration-100 h-20 w-full center border-b border-white-l/20 last:border-b-0"
+              className="hover:bg-dull-black/10 duration-100 h-16 lg:h-20 w-full center border-b border-white-l/20 last:border-b-0"
             >
               <ListItem alignItems="center" className="mr-2">
                 <div className="flex justify-between w-full items-center">
@@ -65,7 +65,7 @@ const RequestSection: FC<RequestSectionProps> = ({ title, type, requests }) => {
                     <ListItemText
                       primary={user.username}
                       secondary={
-                        <span className="text-sm text-gray-400/60 pl-1">
+                        <span className="text-sm text-gray-400/60 lg:pl-1">
                           {timeAgo(req.updatedAt)}
                         </span>
                       }

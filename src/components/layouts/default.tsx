@@ -21,6 +21,8 @@ import Loading from "../ui/Loading";
 import ClearIcon from "@mui/icons-material/Clear";
 import GroupIcon from "@mui/icons-material/Groups";
 import { Link, useLocation } from "react-router-dom";
+import SearchIcon from "@mui/icons-material/Search";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 const Settings = () => {
   // const { user } = useUserStore();
@@ -47,7 +49,7 @@ const Settings = () => {
     </div>
   );
 };
-const Chats = () => {
+const Chats = ({ togglePage }: { togglePage?: () => void }) => {
   const { useInfinty } = useFriend();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
@@ -82,12 +84,36 @@ const Chats = () => {
   return (
     <div className="">
       <div>
-        <div className="bg-black/10 px-3 py-4 border-b border-white-l/10">
-          <Button className="center w-full h-8 bg-white-l/10 rounded-md">
-            search chat
+        <div className="bg-black/10 px-3 py-4 border-b border-white-l/10  hidden lg:flex">
+          <Button className="center w-max lg:w-full px-4 pr-6 h-8 bg-white-l/10 rounded-md gap-2">
+            <div className="center ">
+              <SearchIcon className="text-base" />
+            </div>
+            <span>search chat</span>
           </Button>
+          <Typography className="w-max mx-auto flex justify-center items-center lg:hidden">
+            <span className="text-sm px-4 text-gray-300/60">
+              Direct message
+            </span>
+          </Typography>
         </div>
-        <div className="">
+        <div className="p-4 lg:hidden space-y-4">
+          <Typography variant="h5">
+            <span className="text-white-l/70">Messages</span>
+          </Typography>
+          <div className="flex gap-4">
+            <div className="rounded-full bg-white/10 p-1.5">
+              <SearchIcon className="text-lg w-6 aspect-square rounded-full" />
+            </div>
+            <div className="rounded-full grow center bg-white-l/10 center space-x-2 text-sm">
+              <span>
+                <PersonAddIcon className="text-base" />
+              </span>
+              <span>Add Friend</span>
+            </div>
+          </div>
+        </div>
+        <div className="hidden lg:block">
           <div className="bg-black/10 px-3 py-4">
             <Link to="/">
               <Button
@@ -103,8 +129,8 @@ const Chats = () => {
         </div>
       </div>
       <Divider flexItem orientation="horizontal" className="bg-white-l/10" />
-      <div id="chat_list" className=" py-5">
-        <Typography className="mb-2">
+      <div id="chat_list" className="py-2 lg:py-5">
+        <Typography className="mb-2 hidden lg:block">
           <span className="text-sm px-4 text-gray-300/60">Direct message</span>
         </Typography>
         <List className="p-0">
@@ -114,17 +140,28 @@ const Chats = () => {
                 <Link
                   key={user.id}
                   to={`/c/${user.chatId}`}
+                  onClick={() => {
+                    if (togglePage) {
+                      togglePage();
+                    }
+                  }}
                   className="hover:bg-white-l/10 duration-75"
                 >
                   <ListItem
                     alignItems="center"
-                    className="mr-2 py-4 justify-between group cursor-pointer"
+                    className="mr-2 md:py-4 py-2 justify-between group cursor-pointer"
                   >
                     <div className="flex">
                       <ListItemAvatar>
-                        <Avatar alt={user.username} src={user.profile.avatar} />
+                        <Avatar
+                          alt={user.username}
+                          src={user.profile.avatar}
+                          className="h-8 w-8 md:h-10 md:w-10"
+                        />
                       </ListItemAvatar>
-                      <ListItemText>{user.username}</ListItemText>
+                      <ListItemText className="text-sm md:text-base">
+                        {user.username}
+                      </ListItemText>
                     </div>
 
                     <div className="btns flex gap-3">
