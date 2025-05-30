@@ -52,7 +52,7 @@ const UserListViewer = ({
     userId: string;
   }>(null);
   const { remove } = useFriend();
-  const handleChat = (id: string) => navigate(`/chat/${id}`);
+  const handleChat = (id: string) => navigate(`/c/${id}`);
   const handleMenuClick = (
     e: React.MouseEvent<HTMLButtonElement>,
     userId: string

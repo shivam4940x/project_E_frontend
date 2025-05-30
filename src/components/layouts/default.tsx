@@ -49,7 +49,7 @@ const Settings = () => {
     </div>
   );
 };
-const Chats = ({ togglePage }: { togglePage?: () => void }) => {
+const Chats = () => {
   const { useInfinty } = useFriend();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
@@ -140,11 +140,6 @@ const Chats = ({ togglePage }: { togglePage?: () => void }) => {
                 <Link
                   key={user.id}
                   to={`/c/${user.chatId}`}
-                  onClick={() => {
-                    if (togglePage) {
-                      togglePage();
-                    }
-                  }}
                   className="hover:bg-white-l/10 duration-75"
                 >
                   <ListItem

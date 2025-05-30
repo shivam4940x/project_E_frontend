@@ -4,10 +4,9 @@ import {
   Avatar,
   BottomNavigation,
   BottomNavigationAction,
-  Button,
   Divider,
 } from "@mui/material";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
 import ChatIcon from "@mui/icons-material/Chat";
 import { useEffect, useRef, useState } from "react";
@@ -45,28 +44,13 @@ const Profile = () => {
 const DefaulLayout = () => {
   const root = useRef(null);
   const scope = useRef<any>(null);
-  const navigate = useNavigate();
   const [value, setValue] = useState(0);
-  const [, setIsPageActie] = useState(false);
   const [activeComponent, setActiveComponent] = useState<
     "chat" | "friends" | "profile"
   >("chat");
 
-  const togglePage = () => {
-    setIsPageActie((pre) => {
-      const dir = pre ? "right" : "left";
-      if (pre) {
-        navigate("/");
-      }
-      scope.current.methods.move_page({
-        target: ".the_page",
-        dir,
-      });
-      return !pre;
-    });
-  };
   const conponents = {
-    chat: <Chats togglePage={togglePage} />,
+    chat: <Chats />,
     friends: <Friends />,
     profile: <Profile />,
   };
@@ -86,6 +70,7 @@ const DefaulLayout = () => {
         x: move,
         duration,
         ease: "outQuint",
+        delay: dir === "left" ? 200 : 0,
       });
     };
 
@@ -182,14 +167,14 @@ const DefaulLayout = () => {
         </div>
       </div>
 
-      <div className="top-0 left-full h-full w-full absolute bg-black the_page">
+      {/* <div className="top-0 left-full h-full w-full absolute bg-black the_page lg:hidden">
         <div className="h-10">
           <Button onClick={togglePage}>wanna go back?</Button>
           <div>
             <Outlet />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
