@@ -88,6 +88,15 @@ const smolTimestamp = (isoString: string) => {
     hour12: true,
   });
 };
+const onError = (error: any) => {
+  // only for react query errors
+  const msg: string = error?.response?.data?.message as string;
+  if (msg) {
+    toast.error(msg);
+  } else {
+    toast.error("An unknown error occurred");
+  }
+};
 export {
   debounce,
   wait,
@@ -95,4 +104,5 @@ export {
   timeAgo,
   formatChatTimestamp,
   smolTimestamp,
+  onError,
 };

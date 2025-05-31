@@ -1,12 +1,55 @@
+import { onError } from "@/lib/other";
 import ChatService from "@/services/chat.service";
 import type { MessageAll } from "@/types/Response";
 import {
   useInfiniteQuery,
+  useMutation,
+  useQueryClient,
   type InfiniteData,
   type UseInfiniteQueryResult,
 } from "@tanstack/react-query";
 
 export const useChat = () => {
+  const queryClient = useQueryClient();
+
+  const useDelete = useMutation({
+    mutationFn: async ({
+      id,
+      conversationId,
+    }: {
+      id: string;
+      conversationId: string;
+    }) => {
+      const res = await ChatService.delete(id);
+      console.log(conversationId);
+      return res.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["chat", variables.conversationId],
+      });
+    },
+    onError,
+  });
+  const edit = useMutation({
+    mutationFn: async ({
+      id,
+      conversationId,
+    }: {
+      id: string;
+      conversationId: string;
+    }) => {
+      const res = await ChatService.edit(id);
+      console.log(conversationId);
+      return res.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["chat", variables.conversationId],
+      });
+    },
+    onError,
+  });
   return {
     useInfinty: (
       limit: number = 50,
@@ -35,5 +78,7 @@ export const useChat = () => {
         enabled: !!conversationId,
       });
     },
+    deleteChat: useDelete.mutate,
+    editChat: edit.mutate,
   };
 };

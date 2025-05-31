@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   useInfiniteQuery,
   useMutation,
@@ -10,15 +10,8 @@ import {
 import { toast } from "react-toastify";
 import FriendService from "@/services/friend.service";
 import type { FriendRequestObj, FriendsAll } from "@/types/Response";
+import { onError } from "@/lib/other";
 
-const onError = (error: any) => {
-  const msg: string = error?.response?.data?.message as string;
-  if (msg) {
-    toast.error(msg);
-  } else {
-    toast.error("An unknown error occurred");
-  }
-};
 const useFriendRequest = () => {
   const queryClient = useQueryClient();
 
@@ -100,7 +93,7 @@ const useFriend = () => {
     mutationFn: async ({ id }: { id: string }) => {
       const res = await FriendService.delete(id);
       console.log(res.data);
-      return res
+      return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["friends"] });

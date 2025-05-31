@@ -16,6 +16,12 @@ const ChatService = {
       },
     });
   },
+  delete: (messageId: string) => {
+    return axiosInstance.delete(`/chat/${messageId}`);
+  },
+  edit: (messageId: string) => {
+    return axiosInstance.post(`/chat/update/${messageId}`);
+  },
 };
 
 export default ChatService;

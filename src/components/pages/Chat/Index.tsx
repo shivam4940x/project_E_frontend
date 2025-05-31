@@ -12,12 +12,14 @@ import {
 import type { UserObj } from "@/types/Response";
 import type { Message } from "@/types/SharedProps";
 import { formatChatTimestamp, smolTimestamp } from "@/lib/other";
+import LongMenu from "./MsgOptions";
 
 interface MainChatProps {
   message: Message[];
   setmessage: Dispatch<SetStateAction<Message[]>>;
   participants: UserObj[];
   loadMoreRef: Ref<HTMLDivElement>;
+  convoId: string;
 }
 interface GroupedMessage {
   id: string;
@@ -29,11 +31,13 @@ interface GroupedMessage {
   }[];
   createdAt: string;
 }
+
 const MainChat = ({
   message,
   setmessage,
   participants,
   loadMoreRef,
+  convoId,
 }: MainChatProps) => {
   const groupedMessages = useMemo(() => {
     const groups: GroupedMessage[] = [];
@@ -113,7 +117,7 @@ const MainChat = ({
                   return (
                     <div
                       key={key}
-                      className="hover:bg-white-l/10 flex gap-x-4 pl-4"
+                      className="hover:bg-white-l/10 flex gap-x-4 pl-4 relative group"
                     >
                       <div className="mt-1 h-11 center">
                         <Avatar
@@ -141,18 +145,24 @@ const MainChat = ({
                           <div className="py-px w-full ">{m.value}</div>
                         </div>
                       </div>
+                      <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
+                        <LongMenu messageId={m.id} conversationId={convoId} />
+                      </div>
                     </div>
                   );
                 } else {
                   return (
                     <div
                       key={key}
-                      className="hover:bg-white-l/10 py-px w-full flex group"
+                      className="hover:bg-white-l/10 py-px w-full flex group relative group"
                     >
                       <div className="w-18 text-xs group-hover:opacity-100 opacity-0 text-white-l/50 h-6 center">
                         {smolTimestamp(m.createdAt)}
                       </div>
                       <div>{m.value}</div>
+                      <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
+                        <LongMenu messageId={m.id} conversationId={convoId} />
+                      </div>
                     </div>
                   );
                 }

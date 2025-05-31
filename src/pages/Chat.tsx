@@ -100,10 +100,7 @@ const Chat = () => {
       reset();
     }
   };
-  console.log({
-    chat,
-    allMessages,
-  });
+
   if (isLoading)
     return (
       <div className="div center">
@@ -128,6 +125,7 @@ const Chat = () => {
                 setmessage={setLiveMessages}
                 participants={participants}
                 loadMoreRef={loadMoreRef}
+                convoId={conversationId as string}
               />
             </>
           )}
