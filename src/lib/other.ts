@@ -81,5 +81,18 @@ const formatChatTimestamp = (isoString: string): string => {
 
   return `${datePart}, ${time}`;
 };
-
-export { debounce, wait, copyText, timeAgo, formatChatTimestamp };
+const smolTimestamp = (isoString: string) => {
+  return new Date(isoString).toLocaleTimeString([], {
+    minute: "2-digit",
+    hour: "2-digit",
+    hour12: true,
+  });
+};
+export {
+  debounce,
+  wait,
+  copyText,
+  timeAgo,
+  formatChatTimestamp,
+  smolTimestamp,
+};

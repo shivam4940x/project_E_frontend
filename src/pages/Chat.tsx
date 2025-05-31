@@ -1,4 +1,5 @@
 import MainChat from "@/components/pages/Chat/Index";
+import Loading from "@/components/ui/Loading";
 import { useChat } from "@/hooks/useChat";
 import { useParticipants } from "@/hooks/useParticipants";
 import useIntersectionObserver from "@/hooks/util/useIntersectionObserver";
@@ -22,7 +23,7 @@ const Chat = () => {
     useParticipants(conversationId);
 
   const currentConversationRef = useRef<string | null>(null);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const [liveMessages, setLiveMessages] = useState<Message[]>([]);
 
@@ -40,15 +41,29 @@ const Chat = () => {
     [chat]
   );
 
-  const allMessages = useMemo(
-    () => [...historicalMessages, ...liveMessages],
-    [historicalMessages, liveMessages]
-  );
+  const allMessages = useMemo(() => {
+    const merged = [...historicalMessages, ...liveMessages];
+
+    const uniqueMap = new Map<string, Message>();
+    for (const msg of merged) {
+      const key = `${msg.id}-${msg.createdAt}`;
+      uniqueMap.set(key, msg);
+    }
+
+    return Array.from(uniqueMap.values()).sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }, [historicalMessages, liveMessages]);
 
   useIntersectionObserver({
-    targetRef: loadMoreRef as React.RefObject<HTMLElement>,
+    targetRef: loadMoreRef as React.RefObject<HTMLDivElement>,
     onIntersect: () => {
-      if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      console.log("interacting");
+      if (hasNextPage && !isFetchingNextPage) {
+        console.log("fetching next page");
+        fetchNextPage();
+      }
     },
     enabled: hasNextPage && !isFetchingNextPage,
   });
@@ -70,15 +85,8 @@ const Chat = () => {
     Chatsocket.emit("join", { conversationId });
     currentConversationRef.current = conversationId;
 
-    const handleNewMessage = (msg: Message) => {
-      setLiveMessages((prev) => [...prev, msg]);
-    };
-
-    Chatsocket.on("message", handleNewMessage);
-
     return () => {
       Chatsocket.emit("leave", { conversationId });
-      Chatsocket.off("message", handleNewMessage);
       setLiveMessages([]);
     };
   }, [conversationId]);
@@ -92,8 +100,18 @@ const Chat = () => {
       reset();
     }
   };
-
-  if (isLoading) return <div>Loading chat...</div>;
+  console.log({
+    chat,
+    allMessages,
+  });
+  if (isLoading)
+    return (
+      <div className="div center">
+        <div className="flex gap-3">
+          <Loading /> loading...
+        </div>
+      </div>
+    );
   if (isError) return <div>Error loading chat.</div>;
 
   return (
@@ -109,8 +127,8 @@ const Chat = () => {
                 message={allMessages}
                 setmessage={setLiveMessages}
                 participants={participants}
+                loadMoreRef={loadMoreRef}
               />
-              <div ref={loadMoreRef}></div>
             </>
           )}
         </div>
