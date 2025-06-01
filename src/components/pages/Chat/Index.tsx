@@ -13,6 +13,7 @@ import type { UserObj } from "@/types/Response";
 import type { Message } from "@/types/SharedProps";
 import { formatChatTimestamp, smolTimestamp } from "@/lib/other";
 import LongMenu from "./MsgOptions";
+import { useUsers } from "@/hooks/useUsers";
 
 interface MainChatProps {
   message: Message[];
@@ -96,7 +97,7 @@ const MainChat = ({
       Chatsocket.off("receive", handler);
     };
   }, [setmessage]);
-
+  const { data: currentUser } = useUsers().useCurrentUser();
   return (
     <ul
       id="chatWrapper"
@@ -145,9 +146,11 @@ const MainChat = ({
                           <div className="py-px w-full ">{m.value}</div>
                         </div>
                       </div>
-                      <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
-                        <LongMenu messageId={m.id} conversationId={convoId} />
-                      </div>
+                      {msg.sender.id === currentUser?.id && (
+                        <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
+                          <LongMenu messageId={m.id} conversationId={convoId} />
+                        </div>
+                      )}
                     </div>
                   );
                 } else {
@@ -160,9 +163,11 @@ const MainChat = ({
                         {smolTimestamp(m.createdAt)}
                       </div>
                       <div>{m.value}</div>
-                      <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
-                        <LongMenu messageId={m.id} conversationId={convoId} />
-                      </div>
+                      {msg.sender.id === currentUser?.id && (
+                        <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
+                          <LongMenu messageId={m.id} conversationId={convoId} />
+                        </div>
+                      )}
                     </div>
                   );
                 }

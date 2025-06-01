@@ -18,7 +18,6 @@ import { useFriend } from "@/hooks/useFriend";
 import { Fragment, useRef, type RefObject } from "react";
 import useIntersectionObserver from "@/hooks/util/useIntersectionObserver";
 import Loading from "../ui/Loading";
-import ClearIcon from "@mui/icons-material/Clear";
 import GroupIcon from "@mui/icons-material/Groups";
 import { Link, useLocation } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
@@ -41,10 +40,11 @@ const Settings = () => {
           </span>
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
-
-        <IconButton>
-          <SettingsIcon className="text-gray-300 hover:rotate-90 duration-200 transition-transform " />
-        </IconButton>
+        <Link to={"/settings/profile"}>
+          <IconButton>
+            <SettingsIcon className="text-gray-300 hover:rotate-90 duration-200 transition-transform " />
+          </IconButton>
+        </Link>
       </Card>
     </div>
   );
@@ -85,12 +85,6 @@ const Chats = () => {
     <div className="">
       <div>
         <div className="bg-black/10 px-3 py-4 border-b border-white-l/10  hidden lg:flex">
-          <Button className="center w-max lg:w-full px-4 pr-6 h-8 bg-white-l/10 rounded-md gap-2">
-            <div className="center ">
-              <SearchIcon className="text-base" />
-            </div>
-            <span>search chat</span>
-          </Button>
           <Typography className="w-max mx-auto flex justify-center items-center lg:hidden">
             <span className="text-sm px-4 text-gray-300/60">
               Direct message
@@ -157,12 +151,6 @@ const Chats = () => {
                       <ListItemText className="text-sm md:text-base">
                         {user.username}
                       </ListItemText>
-                    </div>
-
-                    <div className="btns flex gap-3">
-                      <Button className="chat rounded-full aspect-square min-w-8 group-hover:flex hidden">
-                        <ClearIcon className="text-sm" />
-                      </Button>
                     </div>
                   </ListItem>
                 </Link>

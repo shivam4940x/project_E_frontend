@@ -2,6 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import Loading from "@/components/ui/Loading";
 import DefaultLayout from "./layout/default";
+import SettingsLayot from "./layout/settings";
+import Profile from "./pages/settings/Profile";
+import Account from "./pages/settings/Account";
+import Privacy from "./pages/settings/Privacy";
 
 // Lazy-loaded components
 const Error404 = lazy(() => import("@/components/utility/404"));
@@ -10,7 +14,20 @@ const Chat = lazy(() => import("@/pages/Chat"));
 const Login = lazy(() => import("@/pages/Login"));
 
 const App = () => {
-  // const pages = [];
+  const settings = [
+    {
+      path: "profile",
+      element: <Profile />,
+    },
+    {
+      path: "account",
+      element: <Account />,
+    },
+    {
+      path: "privacy",
+      element: <Privacy />,
+    },
+  ];
   // useSocketLifecycle();
   return (
     <Suspense
@@ -27,7 +44,11 @@ const App = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/c/:conversationId" element={<Chat />} />
         </Route>
-
+        <Route path="/settings" element={<SettingsLayot />}>
+          {settings.map((s) => (
+            <Route path={`/settings/${s.path}`} element={s.element} />
+          ))}
+        </Route>
         {/* Standalone routes */}
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Error404 />} />

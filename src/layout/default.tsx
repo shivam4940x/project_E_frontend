@@ -87,15 +87,15 @@ const DefaulLayout = () => {
     <div
       ref={root}
       className="flex h-screen flex-col max-h-screen overflow-hidden w-full relative"
-      style={{
-        backgroundImage:
-          "url(https://w.wallhaven.cc/full/2y/wallhaven-2yp6gg.png)",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundColor: "rgba(0, 0, 0, 0.6)", // Simulates bg-black/70
-        backgroundBlendMode: "overlay",
-      }}
+      // style={{
+      //   backgroundImage:
+      //     "url(https://w.wallhaven.cc/full/2y/wallhaven-2yp6gg.png)",
+      //   backgroundPosition: "center",
+      //   backgroundRepeat: "no-repeat",
+      //   backgroundSize: "cover",
+      //   backgroundColor: "rgba(0, 0, 0, 0.6)", // Simulates bg-black/70
+      //   backgroundBlendMode: "overlay",
+      // }}
     >
       <div className="grow backdrop-blur-xs lg:grid grid-cols-5 grid-rows-1 hidden">
         <div className="div flex flex-col justify-between border-r border-white-l/20">

@@ -99,13 +99,13 @@ const AddFriend = () => {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex bg-paper-black/50 gap-4 h-16 rounded-xl"
+        className="flex bg-paper-black/50 gap-4 h-16 rounded-xl border border-soft-blue/20"
       >
         <CustomTextField
           placeholder="User Id"
           type="text"
           variant="outlined"
-          className="grow border-0"
+          className="grow "
           InpclassName="h-8 px-4 "
           register={register}
           name="id"
