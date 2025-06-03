@@ -45,3 +45,8 @@ input:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s;
   -webkit-text-fill-color: #ffffff !important; /* Optional: control text color */
 }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

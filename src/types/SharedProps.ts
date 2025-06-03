@@ -5,5 +5,9 @@ type Message = {
   senderId: string;
   createdAt: string;
 };
-
-export type { DashboardContent, Message };
+type UserQuery = {
+  query: {
+    profile: boolean;
+  };
+}
+export type { DashboardContent, Message, UserQuery };

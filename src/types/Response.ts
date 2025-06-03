@@ -16,7 +16,15 @@ type UserGetAll = {
 type UserObj = {
   id: string;
   username: string;
-  profile: { avatar: string };
+  profile: {
+    avatar: string;
+    userId?: string;
+    firstName?: string;
+    about?: string;
+    lastName?: string;
+    phone?: number;
+    createdAt?: string;
+  };
 };
 
 type FriendRequestObj = {

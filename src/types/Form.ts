@@ -9,5 +9,14 @@ type signupFormData = {
   email: string;
   password: string;
 };
-
-export type { LoginFormData, signupFormData, };
+type UserPayload = {
+  username: string;
+  profile: {
+    avatar?: string;
+    firstName?: string;
+    about?: string;
+    lastName?: string;
+    phone?: number;
+  };
+};
+export type { LoginFormData, signupFormData, UserPayload };

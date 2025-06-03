@@ -34,8 +34,10 @@ const Settings = () => {
           alt={user?.username}
           className="mr-2"
         />
-        <Typography variant="h6" className="capitalize">
-          <span className="text-sm">
+        <Typography variant="h6">
+          <span
+            className="text-sm normal-case"
+          >
             {error ? error.message : user?.username}
           </span>
         </Typography>

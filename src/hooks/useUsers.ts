@@ -1,14 +1,33 @@
 import {
   useInfiniteQuery,
+  useMutation,
   useQuery,
+  useQueryClient,
   type InfiniteData,
   type UseInfiniteQueryResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
 import type { UserObj, UserGetAll } from "@/types/Response";
 import UserService from "../services/user.service";
+import type { UserQuery } from "@/types/SharedProps";
+import { toast } from "react-toastify";
+import { onError } from "@/lib/other";
+import type { UserPayload } from "@/types/Form";
 
 export const useUsers = () => {
+  const queryClient = useQueryClient();
+
+  const updateUser = useMutation({
+    mutationFn: async (payload: UserPayload) => {
+      return await UserService.update(payload);
+    },
+    onSuccess: () => {
+      toast.success("User update successfully");
+      queryClient.invalidateQueries({ queryKey: ["CurrentUser"] });
+    },
+    onError,
+  });
+
   return {
     useInfinty: (
       limit: number = 5
@@ -32,12 +51,11 @@ export const useUsers = () => {
         },
       });
     },
-
-    useCurrentUser: (): UseQueryResult<UserObj, Error> => {
+    useCurrentUser: (params?: UserQuery): UseQueryResult<UserObj, Error> => {
       return useQuery<UserObj, Error>({
         queryKey: ["CurrentUser"],
         queryFn: async () => {
-          const user = await UserService.get();
+          const user = await UserService.get(params);
           return user.data;
         },
       });
@@ -50,6 +68,10 @@ export const useUsers = () => {
           return user.data;
         },
       });
+    },
+    updateUser: {
+      fn: updateUser.mutate,
+      isPending: updateUser.isPending,
     },
   };
 };

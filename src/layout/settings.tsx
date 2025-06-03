@@ -51,8 +51,8 @@ const SettingsLayot = () => {
           </Tooltip>
         </Link>
       </div>
-      <div className="grid grid-cols-12 div grow px-8 py-10 gap-4">
-        <div className="col-span-3 div flex flex-col justify-between">
+      <div className="grid grid-cols-12 div grow px-8 py-10 gap-16 ">
+        <div className="col-span-3 flex flex-col justify-between h-max sticky top-0">
           <List className="">
             {links.map((l) => {
               const isCurrentPath = currentPath == l.path;
@@ -74,7 +74,7 @@ const SettingsLayot = () => {
           </List>
           <Button
             onClick={logout}
-            className={`p-4 w-full text-left brightness-75 hover:brightness-100 bg-soft-red/10 rounded-xl mx-5`}
+            className={`py-3 w-1/2 text-left brightness-75 hover:brightness-100 bg-soft-red/10 rounded-xl mx-5`}
           >
             {isloading ? (
               <div>
