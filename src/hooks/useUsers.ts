@@ -53,7 +53,7 @@ export const useUsers = () => {
     },
     useCurrentUser: (params?: UserQuery): UseQueryResult<UserObj, Error> => {
       return useQuery<UserObj, Error>({
-        queryKey: ["CurrentUser"],
+        queryKey: params ? ["CurrentUser", params] : ["CurrentUser"],
         queryFn: async () => {
           const user = await UserService.get(params);
           return user.data;

@@ -1,10 +1,8 @@
 import { Button, Typography } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Groups";
-
-//types
 import type { DashboardContent } from "@/types/SharedProps";
 import type { Dispatch, SetStateAction } from "react";
-import { CustomTextField } from "@/components/utility/FormInput";
+import { CustomTextField } from "@/components/util/FormInput";
 import { useFriend } from "@/hooks/useFriend";
 import { useForm } from "react-hook-form";
 

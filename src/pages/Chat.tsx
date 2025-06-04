@@ -1,3 +1,4 @@
+import ChatList from "@/components/pages/Chat/ChatList";
 import MainChat from "@/components/pages/Chat/Index";
 import Loading from "@/components/ui/Loading";
 import { useChat } from "@/hooks/useChat";
@@ -8,7 +9,7 @@ import type { Message } from "@/types/SharedProps";
 
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import { Button, TextField } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -69,7 +70,7 @@ const Chat = () => {
   });
 
   useEffect(() => {
-    if (!conversationId) return;
+    if (!conversationId || conversationId == "0") return;
 
     // Leave old room
     if (
@@ -101,83 +102,86 @@ const Chat = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="div center">
-        <div className="flex gap-3">
-          <Loading /> loading...
-        </div>
-      </div>
-    );
   if (isError) return <div>Error loading chat.</div>;
 
   return (
-    <div className="div">
-      <main className="flex flex-col h-full pb-8 w-full max-w-full">
-        {/* Chat messages */}
-        <div className="grow max-w-full max-h-full h-full overflow-y-scroll flex flex-col-reverse">
-          {loadingParticipants ? (
-            <div></div>
-          ) : (
-            <>
-              <MainChat
-                message={allMessages}
-                setmessage={setLiveMessages}
-                participants={participants}
-                loadMoreRef={loadMoreRef}
-                convoId={conversationId as string}
-              />
-            </>
-          )}
-        </div>
-
-        {/* Input */}
-        <div className="max-h-36 border mx-4 rounded-xl border-white/10 bg-dull-black/90 flex items-center">
-          <div className="p-2 flex items-end h-full">
-            <Button className="aspect-square h-10 min-w-0 rounded-full bg-paper-black/20 p-2">
-              <AddCircleRoundedIcon className="div" />
-            </Button>
+    <Grid container className="div flex max-h-full py-1" columns={13}>
+      <Grid
+        size={3}
+        className="border-r border-white-l/10 px-2"
+        maxHeight={"100%"}
+      >
+        <ChatList />
+      </Grid>
+      <Grid size={10} maxHeight={"100%"}>
+        <main className="flex flex-col h-full pb-4 w-full max-w-full">
+          {/* Chat messages */}
+          <div className="grow max-w-full max-h-full h-full overflow-y-scroll flex flex-col-reverse">
+            {loadingParticipants || isLoading ? (
+              <div className="div center">
+                <Loading />
+              </div>
+            ) : (
+              <>
+                <MainChat
+                  message={allMessages}
+                  setmessage={setLiveMessages}
+                  participants={participants}
+                  loadMoreRef={loadMoreRef}
+                  convoId={conversationId as string}
+                />
+              </>
+            )}
           </div>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="grow pr-4 flex justify-between items-center"
-          >
-            <TextField
-              {...register("content")}
-              placeholder="Type your message..."
-              variant="standard"
-              multiline
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(onSubmit)();
-                }
-              }}
-              minRows={1}
-              maxRows={6}
-              slotProps={{
-                input: {
-                  disableUnderline: true,
-                  autoComplete: "off",
-                  spellCheck: "false",
-                  className: "text-amber-50 break-words resize-none h-full",
-                },
-              }}
-              className="text-amber-50 w-full break-words h-full"
-            />
-            <div className="p-2 h-full">
-              <Button
-                className="aspect-square h-10 min-w-0 rounded-full bg-paper-black/20 p-2"
-                type="submit"
-              >
-                <SendRoundedIcon className="div" />
+          {/* Input */}
+          <div className="max-h-36 border mx-4 rounded-xl border-white/10 bg-dull-black/90 flex items-center">
+            <div className="p-2 flex items-end h-full">
+              <Button className="aspect-square h-10 min-w-0 rounded-full bg-paper-black/20 p-2">
+                <AddCircleRoundedIcon className="div" />
               </Button>
             </div>
-          </form>
-        </div>
-      </main>
-    </div>
+
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="grow pr-4 flex justify-between items-center"
+            >
+              <TextField
+                {...register("content")}
+                placeholder="Type your message..."
+                variant="standard"
+                multiline
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(onSubmit)();
+                  }
+                }}
+                minRows={1}
+                maxRows={6}
+                slotProps={{
+                  input: {
+                    disableUnderline: true,
+                    autoComplete: "off",
+                    spellCheck: "false",
+                    className: "text-amber-50 break-words resize-none h-full",
+                  },
+                }}
+                className="text-amber-50 w-full break-words h-full"
+              />
+              <div className="p-2 h-full">
+                <Button
+                  className="aspect-square h-10 min-w-0 rounded-full bg-paper-black/20 p-2"
+                  type="submit"
+                >
+                  <SendRoundedIcon className="div" />
+                </Button>
+              </div>
+            </form>
+          </div>
+        </main>
+      </Grid>
+    </Grid>
   );
 };
 

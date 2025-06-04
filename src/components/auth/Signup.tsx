@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button, Card, CardContent, Divider, Typography } from "@mui/material";
 import { wait } from "@/lib/other";
-import { CustomTextField } from "@/components/utility/FormInput";
+import { CustomTextField } from "@/components/util/FormInput";
 import Loading from "@/components/ui/Loading";
 import axiosInstance from "@/lib/plugins/axios";
 import type { signupFormData } from "@/types/Form";

@@ -1,6 +1,5 @@
-import { Button, List, ListItem, Tooltip } from "@mui/material";
+import { Button, List, ListItem } from "@mui/material";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
 import axiosInstance from "@/lib/plugins/axios";
 import { useState } from "react";
 import Loading from "@/components/ui/Loading";
@@ -42,17 +41,8 @@ const SettingsLayot = () => {
 
   return (
     <div className="h-screen flex ">
-      <div className="h-full px-5 py-12 border-r border-white-l/10">
-        <Link to={"/"}>
-          <Tooltip title="Home" className="w-max" placement="left">
-            <div>
-              <HomeIcon className="text-white/60 text-3xl" />
-            </div>
-          </Tooltip>
-        </Link>
-      </div>
-      <div className="grid grid-cols-12 div grow px-8 py-10 gap-16 ">
-        <div className="col-span-3 flex flex-col justify-between h-max sticky top-0">
+      <div className="flex div grow px-2 py-10 gap-12 max-w-full">
+        <div className="col-span-3 flex flex-col justify-between h-full sticky top-0 min-w-max mx-3">
           <List className="">
             {links.map((l) => {
               const isCurrentPath = currentPath == l.path;
@@ -74,7 +64,7 @@ const SettingsLayot = () => {
           </List>
           <Button
             onClick={logout}
-            className={`py-3 w-1/2 text-left brightness-75 hover:brightness-100 bg-soft-red/10 rounded-xl mx-5`}
+            className={`py-3 w-full text-left brightness-75 hover:brightness-100 bg-soft-red/10 rounded-xl mx-5`}
           >
             {isloading ? (
               <div>
@@ -86,7 +76,7 @@ const SettingsLayot = () => {
           </Button>
         </div>
 
-        <div className="col-span-9 div">
+        <div className="col-span-9 div grow min-w-min">
           <Outlet />
         </div>
       </div>

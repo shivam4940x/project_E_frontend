@@ -8,7 +8,7 @@ import Account from "./pages/settings/Account";
 import Privacy from "./pages/settings/Privacy";
 
 // Lazy-loaded components
-const Error404 = lazy(() => import("@/components/utility/404"));
+const Error404 = lazy(() => import("@/components/util/404"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Chat = lazy(() => import("@/pages/Chat"));
 const Login = lazy(() => import("@/pages/Login"));
@@ -28,7 +28,6 @@ const App = () => {
       element: <Privacy />,
     },
   ];
-  // useSocketLifecycle();
   return (
     <Suspense
       fallback={
@@ -43,12 +42,13 @@ const App = () => {
           {/* Index route (root path "/") */}
           <Route path="/" element={<Dashboard />} />
           <Route path="/c/:conversationId" element={<Chat />} />
+          <Route path="/settings" element={<SettingsLayot />}>
+            {settings.map((s) => (
+              <Route path={`/settings/${s.path}`} element={s.element} />
+            ))}
+          </Route>
         </Route>
-        <Route path="/settings" element={<SettingsLayot />}>
-          {settings.map((s) => (
-            <Route path={`/settings/${s.path}`} element={s.element} />
-          ))}
-        </Route>
+
         {/* Standalone routes */}
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Error404 />} />

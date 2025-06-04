@@ -20,7 +20,7 @@ export const useParticipants = (conversationId?: string) => {
   return useQuery({
     queryKey: ["participants", conversationId],
     queryFn: () => fetchParticipants(conversationId!),
-    enabled: !!conversationId,
+    enabled: !!conversationId && conversationId !== "0",
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

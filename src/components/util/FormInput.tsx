@@ -49,7 +49,7 @@ const CustomTextField = <T extends FieldValues>({
       fullWidth={fullWidth}
       disabled={disabled}
       variant={variant}
-      {...register(name, validation)} 
+      {...register(name, validation)}
       error={!!error}
       helperText={helperText}
       className={`${className}`}

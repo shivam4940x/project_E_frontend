@@ -14,8 +14,6 @@ const Error404: React.FC = () => {
     }
   }, [theme]);
 
-
-
   return (
     <main
       className="min-h-screen flex items-center justify-center text-center font-[Fira_Sans,sans-serif]"
@@ -34,8 +32,6 @@ const Error404: React.FC = () => {
           }
         `}
       </style>
-
- 
 
       <div className="flex flex-col gap-8 items-center">
         {/* Eyes */}

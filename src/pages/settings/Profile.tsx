@@ -4,7 +4,7 @@ import { Avatar, Typography, Button, IconButton, Input } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { useUsers } from "@/hooks/useUsers";
 import Loading from "@/components/ui/Loading";
-import { CustomTextField } from "@/components/utility/FormInput";
+import { CustomTextField } from "@/components/util/FormInput";
 import type { UserPayload } from "@/types/Form";
 import CircularProgress, {
   type CircularProgressProps,

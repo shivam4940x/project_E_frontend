@@ -135,7 +135,12 @@ export default function Requests() {
       setRequests(friendRequests);
     }
   }, [friendRequests]);
-
+  if (
+    Requests.onGoingRequests.length == 0 &&
+    Requests.inComingRequests.length == 0
+  ) {
+    return <div className="center div">No pending request</div>;
+  }
   return (
     <div>
       <RequestSection
