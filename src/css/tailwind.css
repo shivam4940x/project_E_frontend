@@ -51,7 +51,7 @@ h6 {
 }
 
 h6 {
-  @apply text-sm text-white-l font-semibold;
+  @apply text-xs md:text-sm text-white-l font-semibold;
 }
 a {
   @apply text-light-blue hover:text-dark-blue cursor-pointer duration-150;

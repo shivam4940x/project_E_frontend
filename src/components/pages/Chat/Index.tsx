@@ -1,6 +1,6 @@
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Chatsocket } from "@/lib/plugins/socket";
-import { Avatar } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 import {
   useEffect,
   useMemo,
@@ -137,13 +137,18 @@ const MainChat = ({
 
                       <div>
                         <div className="flex space-x-3 items-center">
-                          <h6>{user?.username}</h6>
-                          <div className="font-light text-gray-200/50 text-xs">
+                          <Typography variant="h6">
+                            <span className="text-base">{user?.username}</span>
+                          </Typography>
+                          
+                          <div className="font-light text-gray-200/50 text-xs font-Poppins">
                             {formatChatTimestamp(msg.createdAt)}
                           </div>
                         </div>
                         <div>
-                          <div className="py-px w-full ">{m.value}</div>
+                          <div className="py-px w-full font-light">
+                            {m.value}
+                          </div>
                         </div>
                       </div>
                       {msg.sender.id === currentUser?.id && (
@@ -162,7 +167,7 @@ const MainChat = ({
                       <div className="w-18 text-xs group-hover:opacity-100 opacity-0 text-white-l/50 h-6 center">
                         {smolTimestamp(m.createdAt)}
                       </div>
-                      <div>{m.value}</div>
+                      <div className="font-light ">{m.value}</div>
                       {msg.sender.id === currentUser?.id && (
                         <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
                           <LongMenu messageId={m.id} conversationId={convoId} />

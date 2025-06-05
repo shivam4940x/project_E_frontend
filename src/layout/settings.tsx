@@ -1,7 +1,7 @@
 import { Button, List, ListItem } from "@mui/material";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/plugins/axios";
-import { useState } from "react";
+import {useState } from "react";
 import Loading from "@/components/ui/Loading";
 const SettingsLayot = () => {
   const location = useLocation();
@@ -38,6 +38,53 @@ const SettingsLayot = () => {
       setIsloading(false);
     }
   };
+  // const root = useRef(null);
+  // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // const scope = useRef<any>(null);
+  // const [chatOpen, setChatOpen] = useState(false);
+  // useEffect(() => {
+  //   const side_side_ani = ({
+  //     dir,
+  //     target,
+  //     duration = 800,
+  //   }: {
+  //     dir: "in" | "out";
+  //     target: string;
+  //     duration: number;
+  //   }) => {
+  //     const move = dir === "in" ? "-100%" : "100%";
+  //     animate(target, {
+  //       x: move,
+  //       duration,
+  //       ease: "outQuint",
+  //     });
+  //   };
+
+  //   scope.current = createScope({ root }).add((self) => {
+  //     self.add("chat_toggle", side_side_ani);
+  //   });
+
+  //   return () => {
+  //     if (scope.current) scope.current.revert();
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   if (window.innerWidth >= 1024) {
+  //     return;
+  //   }
+
+  //   const animation = {
+  //     dir: chatOpen ? "in" : "out",
+  //     target: ".chat_Wrapper",
+  //     duration: 800,
+  //   };
+  //   scope.current?.methods.chat_toggle(animation);
+  // }, [chatOpen]);
+
+  // useEffect(() => {
+  //   setChatOpen(conversationId !== "0" && Boolean(conversationId));
+  // }, [conversationId]);
 
   return (
     <div className="h-screen flex ">

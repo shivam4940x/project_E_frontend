@@ -19,21 +19,21 @@ const Dashboard = () => {
   );
 
   return (
-    <>
+    <div className="div flex flex-col">
       <div className="w-full h-18">
         <nav className="div">
           <Nav setContent={setCurrentContent} currentContent={currentContent} />
         </nav>
       </div>
-      <div className="flex w-full h-[calc(100vh-56px)]">
-        <main className="grow px-4 py-2 max-h-full overflow-scroll">
+      <div className="flex w-full grow">
+        <main className="grow px-2 py-2 max-h-full">
           {content[currentContent]}
         </main>
-        <div className="w-96 h-full overflow-hidden border-l border-light-blue/20">
+        <div className="w-96 h-full overflow-hidden border-l border-light-blue/20 hidden lg:block">
           <AllUsers />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -5,6 +5,8 @@ import type { Dispatch, SetStateAction } from "react";
 import { CustomTextField } from "@/components/util/FormInput";
 import { useFriend } from "@/hooks/useFriend";
 import { useForm } from "react-hook-form";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import SendIcon from "@mui/icons-material/Send";
 
 type NavProps = {
   setContent: Dispatch<SetStateAction<DashboardContent>>;
@@ -15,20 +17,24 @@ const Nav = ({ setContent, currentContent }: NavProps) => {
   const FriendsAction = [
     { title: "all", value: "all" },
     { title: "requests", value: "requests" },
-    { title: "add friends", value: "add" },
+    {
+      title: "add friends",
+      value: "add",
+      icon: <PersonAddIcon className="text-base" />,
+    },
   ];
 
   return (
     <div className="border-b border-light-blue/20 div px-4 ">
       <div className="flex items-center h-full gap-4">
         <div className="flex items-center gap-2 text-white">
-          <GroupIcon className="text-white/50 text-base" />
-          Friends
+          <GroupIcon className="text-white/50 text-xl " />
+          <span className="hidden lg:inline">Friends</span>
         </div>
         <div className="h-1 w-1 rounded-full bg-white-l/30"></div>
         <ul>
           <li>
-            <div className="flex gap-5 capitalize">
+            <div className="flex gap-2 capitalize">
               {FriendsAction.map((action, index) => {
                 const isActive = currentContent === action.value;
                 const variant: "text" | "outlined" | "contained" =
@@ -49,9 +55,13 @@ const Nav = ({ setContent, currentContent }: NavProps) => {
                     key={index}
                     onClick={() => setContent(action.value as DashboardContent)}
                     variant={variant}
-                    className={baseClass.join(" ")}
+                    className={`text-sm lg:text-base ${baseClass.join(" ")}`}
                   >
-                    {action.title}
+                    {action.icon ? (
+                      <div className="">{action.icon}</div>
+                    ) : (
+                      <div>{action.title}</div>
+                    )}
                   </Button>
                 );
               })}
@@ -85,11 +95,11 @@ const AddFriend = () => {
   };
 
   return (
-    <div className="">
-      <div className="mb-5">
+    <div className="px-3 py-4">
+      <div className="mb-5 space-y-1">
         <Typography variant="h4">add friend</Typography>
-        <Typography variant="h5">
-          <span className="normal-case text-sm text-gray-300">
+        <Typography variant="h6">
+          <span className="normal-case text-gray-300">
             You can add a friend using their user ID
           </span>
         </Typography>
@@ -121,7 +131,10 @@ const AddFriend = () => {
           disabled={isSubmitting || isDisabled}
           sx={{ textTransform: "none" }}
         >
-          Send Friend Request
+          <span className="hidden lg:inline">Send Request</span>
+          <span className="lg:hidden">
+            <SendIcon />
+          </span>
         </Button>
       </form>
     </div>
