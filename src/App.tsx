@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import Loading from "@/components/ui/Loading";
 import DefaultLayout from "./layout/default";
@@ -43,8 +43,16 @@ const App = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/c/:conversationId" element={<Chat />} />
           <Route path="/settings" element={<SettingsLayot />}>
+            <Route
+              path="/settings"
+              element={<Navigate to="/settings/profile" replace />}
+            />
             {settings.map((s) => (
-              <Route path={`/settings/${s.path}`} element={s.element} />
+              <Route
+                key={s.path}
+                path={`/settings/${s.path}`}
+                element={s.element}
+              />
             ))}
           </Route>
         </Route>

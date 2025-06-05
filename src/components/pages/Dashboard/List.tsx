@@ -52,7 +52,11 @@ const UserListViewer = ({
     userId: string;
   }>(null);
   const { remove } = useFriend();
-  const handleChat = (id: string) => navigate(`/c/${id}`);
+
+  const handleChat = (id: string) => {
+    navigate(`/c/${id}`);
+  };
+
   const handleMenuClick = (
     e: React.MouseEvent<HTMLButtonElement>,
     userId: string
@@ -127,7 +131,11 @@ const UserListViewer = ({
                     {type === "friends" && (
                       <Tooltip title="Chat">
                         <Button
-                          onClick={() => handleChat(user.id)}
+                          onClick={() =>
+                            handleChat(
+                              (user as FriendsAll["friendList"][number]).chatId
+                            )
+                          }
                           className="rounded-full aspect-square min-w-12 group-hover:bg-dull-black/50 center"
                         >
                           <ChatBubbleIcon className="text-[17px]" />

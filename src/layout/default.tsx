@@ -8,7 +8,11 @@ const Me = ({ className }: { className: string }) => {
   const { data: user } = useUsers().useCurrentUser();
   return (
     <div className={className}>
-      <Avatar className="w-8 h-8" src={user?.profile.avatar} alt={user?.username} />
+      <Avatar
+        className="w-8 h-8"
+        src={user?.profile.avatar}
+        alt={user?.username}
+      />
     </div>
   );
 };
@@ -39,7 +43,12 @@ const DefaulLayout = () => {
         {links.map((link) => (
           <Link
             to={link.path}
-            className={`inline-block ${path == link.path ? "scale-120 brightness-100" : "brightness-50"}`}
+            className={`inline-block ${
+              path === link.path ||
+              (link.path === "/settings" && path.startsWith("/settings"))
+                ? "scale-120 brightness-100"
+                : "brightness-50"
+            }`}
             key={link.path}
           >
             <Tooltip title={link.title} className="w-max" placement="left">
@@ -48,7 +57,7 @@ const DefaulLayout = () => {
           </Link>
         ))}
       </div>
-      <div className="grow w-full h-full max-h-full">
+      <div className="grow w-full overflow-hidden">
         <Outlet />
       </div>
     </div>

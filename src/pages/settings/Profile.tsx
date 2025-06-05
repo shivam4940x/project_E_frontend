@@ -127,12 +127,12 @@ const Profile = () => {
   }
 
   return (
-    <div className="w-max">
+    <div className="w-max px-4 lg:px-0 lg:py-0 max-h-full max-w-full div overflow-y-scroll overflow-x-hidden pt-6">
       <Typography variant="h2">Edit Profile</Typography>
-      <form className="mt-10 w-max" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex gap-6">
+      <form className="mt-10 lg:w-max w-full space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex gap-6 items-center justify-around">
           <div className="relative group rounded-full overflow-hidden">
-            <Avatar className="w-16 h-16" src={avatar} />
+            <Avatar className="w-18 h-18" src={avatar} />
             <Input
               type="file"
               inputProps={{ accept: "image/*" }}
@@ -157,7 +157,7 @@ const Profile = () => {
             )}
           </div>
 
-          <div className="flex gap-4 items-end">
+          <div className="flex gap-4 items-end flex-col lg:flex-row">
             <CustomTextField
               label="First name"
               type="text"
@@ -179,7 +179,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="my-10 space-y-3">
+        <div >
           <CustomTextField
             variant="standard"
             label="Username"
@@ -192,7 +192,7 @@ const Profile = () => {
           />
         </div>
 
-        <div className="my-10 space-y-3">
+        <div >
           <CustomTextField
             variant="standard"
             label="About me"
@@ -205,7 +205,7 @@ const Profile = () => {
           />
         </div>
 
-        <div className="my-10 space-y-3">
+        <div >
           <CustomTextField
             variant="standard"
             label="Phone number"
