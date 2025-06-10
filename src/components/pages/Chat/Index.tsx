@@ -1,14 +1,16 @@
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Chatsocket } from "@/lib/plugins/socket";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, IconButton, Typography } from "@mui/material";
 import {
   useEffect,
   useMemo,
+  useRef,
+  useState,
   type Dispatch,
   type Ref,
   type SetStateAction,
 } from "react";
-
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import type { UserObj } from "@/types/Response";
 import type { Message } from "@/types/SharedProps";
 import { formatChatTimestamp, smolTimestamp } from "@/lib/other";
@@ -97,7 +99,9 @@ const MainChat = ({
       Chatsocket.off("receive", handler);
     };
   }, [setmessage]);
+
   const { data: currentUser } = useUsers().useCurrentUser();
+
   return (
     <ul
       id="chatWrapper"
@@ -107,75 +111,22 @@ const MainChat = ({
         <div className="div" ref={loadMoreRef}></div>
       </li>
       {groupedMessages.map((msg, greatI) => {
-        const user = msg.sender;
+        // const user = msg.sender;
         return (
           <li key={`${msg.id}_${greatI}`} className={"max-w-full py-2"}>
             <div className="w-full">
               {msg.content.map((m, i) => {
                 const key = `${m.id}_${i}`;
-
-                if (i == 0) {
-                  return (
-                    <div
-                      key={key}
-                      className="hover:bg-white-l/10 flex gap-x-4 pl-4 relative group"
-                    >
-                      <div className="mt-1 h-11 center">
-                        <Avatar
-                          src={msg.sender.profile.avatar}
-                          alt={msg.sender.username}
-                          slotProps={{
-                            img: {
-                              onError: (e) => {
-                                (e.target as HTMLImageElement).src =
-                                  "/default-avatar.png";
-                              },
-                            },
-                          }}
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex space-x-3 items-center">
-                          <Typography variant="h6">
-                            <span className="text-base">{user?.username}</span>
-                          </Typography>
-                          
-                          <div className="font-light text-gray-200/50 text-xs font-Poppins">
-                            {formatChatTimestamp(msg.createdAt)}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="py-px w-full font-light">
-                            {m.value}
-                          </div>
-                        </div>
-                      </div>
-                      {msg.sender.id === currentUser?.id && (
-                        <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
-                          <LongMenu messageId={m.id} conversationId={convoId} />
-                        </div>
-                      )}
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div
-                      key={key}
-                      className="hover:bg-white-l/10 py-px w-full flex group relative group"
-                    >
-                      <div className="w-18 text-xs group-hover:opacity-100 opacity-0 text-white-l/50 h-6 center">
-                        {smolTimestamp(m.createdAt)}
-                      </div>
-                      <div className="font-light ">{m.value}</div>
-                      {msg.sender.id === currentUser?.id && (
-                        <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
-                          <LongMenu messageId={m.id} conversationId={convoId} />
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
+                return (
+                  <Message
+                    key={key}
+                    message={msg}
+                    content={m}
+                    index={i}
+                    currentUser={currentUser as UserObj}
+                    convoId={convoId}
+                  />
+                );
               })}
             </div>
           </li>
@@ -185,4 +136,111 @@ const MainChat = ({
   );
 };
 
+const LONG_PRESS_DURATION = 500;
+
+const Message = ({
+  currentUser,
+  message,
+  convoId,
+  content,
+  index,
+}: {
+  content: GroupedMessage["content"][number];
+  message: GroupedMessage;
+  currentUser: UserObj;
+  convoId: string;
+  index: number;
+}) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isCurrentUser = message.sender.id === currentUser?.id;
+
+  const handleClose = () => setAnchorEl(null);
+
+  const handleIconClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePressStart = (e: React.TouchEvent | React.MouseEvent) => {
+    if (!isCurrentUser) return;
+    const target = e.currentTarget as HTMLElement;
+    timeoutRef.current = setTimeout(() => {
+      setAnchorEl(target);
+    }, LONG_PRESS_DURATION);
+  };
+
+  const handlePressEnd = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  };
+
+  return (
+    <div
+      onTouchStart={handlePressStart}
+      onTouchEnd={handlePressEnd}
+      onMouseDown={handlePressStart}
+      onMouseUp={handlePressEnd}
+      className="hover:bg-white-l/10 flex gap-x-1 relative group pl-1"
+    >
+      {index === 0 ? (
+        <div className="mt-1 h-11 center mx-4">
+          <Avatar
+            src={message.sender.profile.avatar}
+            alt={message.sender.username}
+            slotProps={{
+              img: {
+                onError: (e) => {
+                  (e.target as HTMLImageElement).src = "/default-avatar.png";
+                },
+              },
+            }}
+          />
+        </div>
+      ) : (
+        <div className="w-18 text-xs group-hover:opacity-100 opacity-0 text-white-l/50 h-6 center">
+          {smolTimestamp(message.createdAt)}
+        </div>
+      )}
+
+      <div className="pr-3">
+        {index === 0 && (
+          <div className="flex space-x-3 items-center mb-1">
+            <Typography variant="h6" className="text-base">
+              {message.sender.username}
+            </Typography>
+            <div className="font-light text-gray-200/50 text-xs font-Poppins">
+              {formatChatTimestamp(message.createdAt)}
+            </div>
+          </div>
+        )}
+        <div className="py-px w-full font-light text-white">
+          {content.value}
+        </div>
+      </div>
+
+      {/* Hover icon (desktop) */}
+      {isCurrentUser && (
+        <div className="absolute top-0 right-5 h-full hidden justify-center items-center group-hover:flex">
+          <IconButton
+            aria-label="more"
+            className="text-white rotate-90"
+            onClick={handleIconClick}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        </div>
+      )}
+
+      {/* Shared LongMenu component for both triggers */}
+      {isCurrentUser && (
+        <LongMenu
+          anchorEl={anchorEl}
+          open={!!anchorEl}
+          onClose={handleClose}
+          messageId={content.id}
+          conversationId={convoId}
+        />
+      )}
+    </div>
+  );
+};
 export default MainChat;

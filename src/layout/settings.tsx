@@ -70,6 +70,9 @@ const SettingsLayot = () => {
     };
     scope.current?.methods.chat_toggle(animation);
   }, [IsOpen]);
+  useEffect(() => {
+    setIsOpen((pre) => !pre);
+  }, [currentPath]);
   const logout = async () => {
     try {
       setIsloading(true);

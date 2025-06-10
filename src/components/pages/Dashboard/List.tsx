@@ -89,7 +89,7 @@ const UserListViewer = ({
 
   return (
     <div className="div overflow-y-scroll overflow-x-hidden lg:py-4 py-2">
-      <Typography className="p-2 border-b border-white-l/10 text-sm flex ">
+      <Typography className="p-2 border-b border-white-l/10 flex" variant="h5">
         {type == "friends" ? (
           <span className="pb-2">{title}</span>
         ) : (
@@ -110,12 +110,12 @@ const UserListViewer = ({
               >
                 <ListItem
                   alignItems="center"
-                  className="mr-2 lg:py-4 py-2 justify-between group cursor-pointer"
+                  className="mr-2 lg:py-4 py-2 justify-between group cursor-pointer my-2"
                 >
                   <div className="flex">
                     <ListItemAvatar>
                       <Avatar
-                        className="w-8 lg:w-10 h-8 lg:h-10"
+                        className="h-11 w-11"
                         alt={user.username}
                         src={user.profile.avatar}
                       />
