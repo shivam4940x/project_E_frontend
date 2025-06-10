@@ -128,7 +128,7 @@ const SignupForm: FC = () => {
     }
   }, [location, navigate]);
   return (
-    <Card className="bg-inherit shadow-none overflow-scroll max-h-screen">
+    <Card className="bg-inherit shadow-none overflow-scroll max-h-screen border-0">
       <CardContent className="md:p-6 p-4">
         <Typography
           variant="h4"
