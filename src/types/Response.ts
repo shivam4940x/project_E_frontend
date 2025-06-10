@@ -16,6 +16,8 @@ type UserGetAll = {
 type UserObj = {
   id: string;
   username: string;
+  email?: string;
+  password?:false;
   profile: {
     avatar: string;
     userId?: string;
@@ -23,6 +25,10 @@ type UserObj = {
     about?: string;
     lastName?: string;
     phone?: number;
+    dob?: string;
+    gender?: string;
+    country?: string;
+    language?: string;
     createdAt?: string;
   };
 };

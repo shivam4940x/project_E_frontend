@@ -7,7 +7,8 @@ type Message = {
 };
 type UserQuery = {
   query: {
-    profile: boolean;
+    profile?: boolean;
+    account?: boolean;
   };
-}
+};
 export type { DashboardContent, Message, UserQuery };

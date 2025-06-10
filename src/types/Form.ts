@@ -19,4 +19,14 @@ type UserPayload = {
     phone?: number;
   };
 };
-export type { LoginFormData, signupFormData, UserPayload };
+type UserPayloadAccount = {
+  email?: string;
+  password?: string;
+  profile: {
+    dob?: string;
+    gender?: string;
+    country?: string;
+    language?: string;
+  };
+};
+export type { LoginFormData, signupFormData, UserPayload, UserPayloadAccount };

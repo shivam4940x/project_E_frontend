@@ -12,13 +12,13 @@ import UserService from "../services/user.service";
 import type { UserQuery } from "@/types/SharedProps";
 import { toast } from "react-toastify";
 import { onError } from "@/lib/other";
-import type { UserPayload } from "@/types/Form";
+import type { UserPayload, UserPayloadAccount } from "@/types/Form";
 
 export const useUsers = () => {
   const queryClient = useQueryClient();
 
   const updateUser = useMutation({
-    mutationFn: async (payload: UserPayload) => {
+    mutationFn: async (payload: UserPayload | UserPayloadAccount) => {
       return await UserService.update(payload);
     },
     onSuccess: () => {
