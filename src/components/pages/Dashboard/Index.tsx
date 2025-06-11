@@ -100,7 +100,7 @@ const AddFriend = () => {
         <Typography variant="h4">add friend</Typography>
         <Typography variant="h6">
           <span className="normal-case text-gray-300">
-            You can add a friend using their user ID
+            You can add a friend using their user ID or username
           </span>
         </Typography>
       </div>
@@ -110,7 +110,7 @@ const AddFriend = () => {
         className="flex bg-paper-black/50 gap-4 h-16 rounded-xl border border-soft-blue/20"
       >
         <CustomTextField
-          placeholder="User Id"
+          placeholder="User Id or username"
           type="text"
           variant="outlined"
           className="grow "

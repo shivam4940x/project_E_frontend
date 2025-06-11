@@ -127,9 +127,12 @@ const Profile = () => {
   }
 
   return (
-    <div className="w-max px-4 lg:px-0 lg:py-0 max-h-full max-w-full div overflow-y-scroll overflow-x-hidden pt-6">
+    <div className="w-max px-4 lg:px-0 lg:py-0 max-h-full max-w-full overflow-y-scroll overflow-x-hidden pt-6">
       <Typography variant="h2">Edit Profile</Typography>
-      <form className="mt-10 lg:w-max w-full space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="mt-10 lg:w-max w-full space-y-6"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div className="flex gap-6 items-center justify-around">
           <div className="relative group rounded-full overflow-hidden">
             <Avatar className="w-18 h-18" src={avatar} />
@@ -179,7 +182,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div >
+        <div>
           <CustomTextField
             variant="standard"
             label="Username"
@@ -192,7 +195,7 @@ const Profile = () => {
           />
         </div>
 
-        <div >
+        <div>
           <CustomTextField
             variant="standard"
             label="About me"
@@ -205,7 +208,7 @@ const Profile = () => {
           />
         </div>
 
-        <div >
+        <div>
           <CustomTextField
             variant="standard"
             label="Phone number"
@@ -233,6 +236,14 @@ const Profile = () => {
           </Button>
         </div>
       </form>
+      <div className="w-max text-sm ml-auto my-8 text-gray-300/60">
+        <span>Joined on: </span>
+        <span className="text-gray-300/80">
+          {CurrentUser?.profile.createdAt &&
+            new Date(CurrentUser.profile.createdAt).toLocaleDateString("en-GB")}
+        </span>
+      </div>
+      
     </div>
   );
 };
