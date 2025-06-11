@@ -3,6 +3,7 @@ type Message = {
   id: string;
   content: string;
   senderId: string;
+  iv: string;
   createdAt: string;
 };
 type UserQuery = {

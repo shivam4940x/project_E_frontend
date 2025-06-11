@@ -3,7 +3,6 @@ import { Chatsocket } from "@/lib/plugins/socket";
 import { Avatar, IconButton, Typography } from "@mui/material";
 import {
   useEffect,
-  useMemo,
   useRef,
   useState,
   type Dispatch,
@@ -16,6 +15,7 @@ import type { Message } from "@/types/SharedProps";
 import { formatChatTimestamp, smolTimestamp } from "@/lib/other";
 import LongMenu from "./MsgOptions";
 import { useUsers } from "@/hooks/useUsers";
+import { decryptWithConvoKey } from "@/lib/enc";
 
 interface MainChatProps {
   message: Message[];
@@ -42,55 +42,63 @@ const MainChat = ({
   loadMoreRef,
   convoId,
 }: MainChatProps) => {
-  const groupedMessages = useMemo(() => {
-    const groups: GroupedMessage[] = [];
+  const [groupedMessages, setGroupedMessages] = useState<GroupedMessage[]>([]);
+  useEffect(() => {
+    const groupMessages = async () => {
+      const groups: GroupedMessage[] = [];
 
-    for (let i = 0; i < message.length; i++) {
-      const msg = message[i];
-      const prevMsg = message[i - 1];
-      const user = participants.find((p) => p.id === msg.senderId);
-      const timeDiff = prevMsg
-        ? new Date(msg.createdAt).getTime() -
-          new Date(prevMsg.createdAt).getTime()
-        : Infinity;
+      for (let i = 0; i < message.length; i++) {
+        const msg = message[i];
+        const prevMsg = message[i - 1];
+        const user = participants.find((p) => p.id === msg.senderId);
+        const timeDiff = prevMsg
+          ? new Date(msg.createdAt).getTime() -
+            new Date(prevMsg.createdAt).getTime()
+          : Infinity;
 
-      const isNewGroup =
-        i === 0 ||
-        msg.senderId !== prevMsg?.senderId ||
-        timeDiff > 5 * 60 * 1000;
-
-      if (isNewGroup && user) {
-        groups.push({
-          id: msg.id,
-          sender: user,
-          content: [
-            { id: msg.id, value: msg.content, createdAt: msg.createdAt },
-          ],
-          createdAt: msg.createdAt,
-        });
-      } else if (groups.length > 0) {
-        const lastGroup = groups[groups.length - 1];
-
-        // 🧠 De-dupe safeguard
-        const alreadyExists = lastGroup.content.some(
-          (m) => m.createdAt === msg.createdAt && m.value === msg.content
+        const isNewGroup =
+          i === 0 ||
+          msg.senderId !== prevMsg?.senderId ||
+          timeDiff > 5 * 60 * 1000;
+        const decryptedContent = await decryptWithConvoKey(
+          msg.content,
+          msg.iv,
+          convoId
         );
 
-        if (!alreadyExists) {
-          lastGroup.content.push({
+        if (isNewGroup && user) {
+          groups.push({
             id: msg.id,
-            value: msg.content,
+            sender: user,
+            content: [
+              { id: msg.id, value: decryptedContent, createdAt: msg.createdAt },
+            ],
             createdAt: msg.createdAt,
           });
+        } else if (groups.length > 0) {
+          const lastGroup = groups[groups.length - 1];
+          const alreadyExists = lastGroup.content.some(
+            (m) => m.createdAt === msg.createdAt && m.value === msg.content
+          );
+
+          if (!alreadyExists) {
+            lastGroup.content.push({
+              id: msg.id,
+              value: decryptedContent,
+              createdAt: msg.createdAt,
+            });
+          }
         }
       }
-    }
 
-    return groups;
-  }, [message, participants]);
+      setGroupedMessages(groups);
+    };
+
+    groupMessages();
+  }, [message, participants, convoId]);
 
   useEffect(() => {
-    const handler = (data: Message) => {
+    const handler = async (data: Message) => {
       setmessage((prev) => [...prev, data]);
     };
 
@@ -98,7 +106,7 @@ const MainChat = ({
     return () => {
       Chatsocket.off("receive", handler);
     };
-  }, [setmessage]);
+  }, [setmessage, convoId]);
 
   const { data: currentUser } = useUsers().useCurrentUser();
 

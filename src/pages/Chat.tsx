@@ -15,6 +15,7 @@ import { animate, createScope } from "animejs";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { encryptWithConvoKey } from "@/lib/enc";
 
 type FormData = { content: string };
 
@@ -94,6 +95,9 @@ const ChatLogic = ({ conversationId }: { conversationId: string }) => {
   }, [conversationId]);
 
   if (isError) return <div>Error loading chat.</div>;
+  if (allMessages.length == 0) {
+    return <div className="center div">Start your new journey</div>;
+  }
   return (
     <div className="grow max-w-full max-h-full h-full overflow-y-scroll flex flex-col-reverse">
       {loadingParticipants || isLoading ? (
@@ -123,14 +127,21 @@ const Chat = () => {
   const scope = useRef<any>(null);
   const [chatOpen, setChatOpen] = useState(false);
 
-  const onSubmit = (data: FormData) => {
-    if (data?.content?.trim()) {
-      Chatsocket.emit("send", {
-        content: data.content,
-        conversationId,
-      });
-      reset();
-    }
+  const onSubmit = async (data: FormData) => {
+    if (!data?.content?.trim() || !conversationId) return;
+
+    const { encrypted, iv } = await encryptWithConvoKey(
+      data.content,
+      conversationId
+    );
+
+    Chatsocket.emit("send", {
+      content: encrypted,
+      iv, // required for decrypting
+      conversationId,
+    });
+
+    reset();
   };
 
   useEffect(() => {
@@ -179,7 +190,7 @@ const Chat = () => {
 
   return (
     <div className="div flex max-h-full py-1" ref={root}>
-      <div className="border-r border-white-l/10 px-2 w-full lg:w-max">
+      <div className="border-r border-white-l/10 px-2 w-full lg:w-max lg:min-w-80">
         <ChatList />
       </div>
       <div className="absolute lg:static div top-0 right-0 translate-x-full lg:translate-x-0 chat_Wrapper bg-paper-black">
@@ -197,6 +208,7 @@ const Chat = () => {
             >
               <ArrowBackIosNewIcon className="text-white/80 text-base" />
             </div>
+
             <ChatLogic conversationId={conversationId as string} />
 
             {/* Input */}
