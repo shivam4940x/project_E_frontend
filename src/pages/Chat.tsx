@@ -12,7 +12,7 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import { Button, TextField } from "@mui/material";
 import { animate, createScope } from "animejs";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { encryptWithConvoKey } from "@/lib/enc";
@@ -20,14 +20,14 @@ import { encryptWithConvoKey } from "@/lib/enc";
 type FormData = { content: string };
 
 const ChatLogic = ({ conversationId }: { conversationId: string }) => {
-  const { useInfinty } = useChat();
-
+  const { useInfinity } = useChat();
   const { data: participants = [], isFetching: loadingParticipants } =
     useParticipants(conversationId);
 
   const currentConversationRef = useRef<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [liveMessages, setLiveMessages] = useState<Message[]>([]);
 
   const {
@@ -37,44 +37,37 @@ const ChatLogic = ({ conversationId }: { conversationId: string }) => {
     isFetchingNextPage,
     isLoading,
     isError,
-  } = useInfinty(50, conversationId);
+  } = useInfinity(50, conversationId);
 
-  const historicalMessages = useMemo(
-    () => chat?.pages.flatMap((page) => page.messages).reverse() ?? [],
-    [chat]
-  );
+  // Flatten chat data into state
+  useEffect(() => {
+    if (!chat) return;
 
-  const allMessages = useMemo(() => {
-    const merged = [...historicalMessages, ...liveMessages];
+    const newHistory = chat.pages
+      .flatMap((page) => page.messages)
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
 
-    const uniqueMap = new Map<string, Message>();
-    for (const msg of merged) {
-      const key = `${msg.id}-${msg.createdAt}`;
-      uniqueMap.set(key, msg);
-    }
+    setChatHistory(newHistory);
+  }, [chat]);
 
-    return Array.from(uniqueMap.values()).sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
-  }, [historicalMessages, liveMessages]);
-
+  // Infinite scroll
   useIntersectionObserver({
     targetRef: loadMoreRef as React.RefObject<HTMLDivElement>,
     onIntersect: () => {
-      console.log("interacting");
       if (hasNextPage && !isFetchingNextPage) {
-        console.log("fetching next page");
         fetchNextPage();
       }
     },
     enabled: hasNextPage && !isFetchingNextPage,
   });
 
+  // Socket handling
   useEffect(() => {
-    if (!conversationId || conversationId == "0") return;
+    if (!conversationId || conversationId === "0") return;
 
-    // Leave old room
     if (
       currentConversationRef.current &&
       currentConversationRef.current !== conversationId
@@ -84,20 +77,20 @@ const ChatLogic = ({ conversationId }: { conversationId: string }) => {
       });
     }
 
-    // Join new room
     Chatsocket.emit("join", { conversationId });
     currentConversationRef.current = conversationId;
 
     return () => {
       Chatsocket.emit("leave", { conversationId });
       setLiveMessages([]);
+      setChatHistory([]); // optional: clear history on convo switch
     };
   }, [conversationId]);
 
+  const allMessages = [...chatHistory, ...liveMessages];
+
   if (isError) return <div>Error loading chat.</div>;
-  if (allMessages.length == 0) {
-    return <div className="center div">Start your new journey</div>;
-  }
+
   return (
     <div className="grow max-w-full max-h-full h-full overflow-y-scroll flex flex-col-reverse">
       {loadingParticipants || isLoading ? (
@@ -105,15 +98,13 @@ const ChatLogic = ({ conversationId }: { conversationId: string }) => {
           <Loading />
         </div>
       ) : (
-        <>
-          <MainChat
-            message={allMessages}
-            setmessage={setLiveMessages}
-            participants={participants}
-            loadMoreRef={loadMoreRef}
-            convoId={conversationId as string}
-          />
-        </>
+        <MainChat
+          message={allMessages}
+          setmessage={setLiveMessages}
+          participants={participants}
+          loadMoreRef={loadMoreRef}
+          convoId={conversationId}
+        />
       )}
     </div>
   );

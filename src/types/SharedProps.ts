@@ -4,6 +4,7 @@ type Message = {
   content: string;
   senderId: string;
   iv: string;
+  decrypted?: boolean;
   createdAt: string;
 };
 type UserQuery = {

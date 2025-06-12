@@ -92,7 +92,6 @@ const useFriend = () => {
   const removeFriend = useMutation({
     mutationFn: async ({ id }: { id: string }) => {
       const res = await FriendService.delete(id);
-      console.log(res.data);
       return res;
     },
     onSuccess: () => {

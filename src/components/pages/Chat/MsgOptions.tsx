@@ -6,6 +6,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { copyText } from "@/lib/other";
 import { useChat } from "@/hooks/useChat";
+import type { Message } from "@/types/SharedProps";
 
 const options = [
   // { label: "Edit", icon: <EditIcon className="w-4 h-4" /> },
@@ -21,12 +22,14 @@ export default function LongMenu({
   messageId,
   conversationId,
   open,
+  setmessage,
 }: {
   anchorEl: HTMLElement | null;
   onClose: () => void;
   messageId: string;
   conversationId: string;
   open: boolean;
+  setmessage: React.Dispatch<React.SetStateAction<Message[]>>;
 }) {
   const { deleteChat, editChat } = useChat();
 
@@ -39,7 +42,13 @@ export default function LongMenu({
         copyText(messageId);
         break;
       case "Delete":
-        deleteChat({ id: messageId, conversationId });
+        deleteChat({
+          id: messageId,
+          conversationId,
+          onSuccess: () => {
+            setmessage((prev) => prev.filter((m) => m.id !== messageId));
+          },
+        });
         break;
     }
     onClose();

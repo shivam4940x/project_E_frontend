@@ -36,21 +36,30 @@ interface GroupedMessage {
 }
 
 const MainChat = ({
-  message,
+  message, // allMessages: Message[]
   setmessage,
   participants,
   loadMoreRef,
   convoId,
 }: MainChatProps) => {
   const [groupedMessages, setGroupedMessages] = useState<GroupedMessage[]>([]);
+  const lastMessageRef = useRef<string>(""); // to track last processed message
+  const { data: currentUser } = useUsers().useCurrentUser();
+
+  // Cache to avoid redundant decryptions
+  const decryptedCache = useRef<Map<string, string>>(new Map());
+
   useEffect(() => {
-    const groupMessages = async () => {
+    let isCancelled = false;
+
+    const groupAndDecryptMessages = async () => {
       const groups: GroupedMessage[] = [];
 
       for (let i = 0; i < message.length; i++) {
         const msg = message[i];
         const prevMsg = message[i - 1];
-        const user = participants.find((p) => p.id === msg.senderId);
+        const sender = participants.find((p) => p.id === msg.senderId);
+
         const timeDiff = prevMsg
           ? new Date(msg.createdAt).getTime() -
             new Date(prevMsg.createdAt).getTime()
@@ -60,25 +69,44 @@ const MainChat = ({
           i === 0 ||
           msg.senderId !== prevMsg?.senderId ||
           timeDiff > 5 * 60 * 1000;
-        const decryptedContent = await decryptWithConvoKey(
-          msg.content,
-          msg.iv,
-          convoId
-        );
 
-        if (isNewGroup && user) {
+        // Decryption caching key
+        const decryptKey = `${msg.id}:${msg.iv}`;
+        let decryptedContent = decryptedCache.current.get(decryptKey);
+
+        if (!decryptedContent) {
+          try {
+            decryptedContent = await decryptWithConvoKey(
+              msg.content,
+              msg.iv,
+              convoId
+            );
+            decryptedCache.current.set(decryptKey, decryptedContent);
+          } catch (error) {
+            console.error("Decryption failed:", error);
+            continue;
+          }
+        }
+
+        if (isCancelled) return;
+
+        if (isNewGroup && sender) {
           groups.push({
             id: msg.id,
-            sender: user,
+            sender,
             content: [
-              { id: msg.id, value: decryptedContent, createdAt: msg.createdAt },
+              {
+                id: msg.id,
+                value: decryptedContent,
+                createdAt: msg.createdAt,
+              },
             ],
             createdAt: msg.createdAt,
           });
         } else if (groups.length > 0) {
           const lastGroup = groups[groups.length - 1];
           const alreadyExists = lastGroup.content.some(
-            (m) => m.createdAt === msg.createdAt && m.value === msg.content
+            (m) => m.createdAt === msg.createdAt && m.value === decryptedContent
           );
 
           if (!alreadyExists) {
@@ -91,14 +119,30 @@ const MainChat = ({
         }
       }
 
-      setGroupedMessages(groups);
+      if (!isCancelled) {
+        setGroupedMessages(groups);
+        if (message.length > 0) {
+          lastMessageRef.current = message[message.length - 1].id;
+        }
+      }
     };
 
-    groupMessages();
+    // Only regroup if last message is new
+    if (
+      message.length === 0 ||
+      message[message.length - 1]?.id !== lastMessageRef.current
+    ) {
+      groupAndDecryptMessages();
+    }
+
+    return () => {
+      isCancelled = true;
+    };
   }, [message, participants, convoId]);
 
+  // Live update listener
   useEffect(() => {
-    const handler = async (data: Message) => {
+    const handler = (data: Message) => {
       setmessage((prev) => [...prev, data]);
     };
 
@@ -107,9 +151,9 @@ const MainChat = ({
       Chatsocket.off("receive", handler);
     };
   }, [setmessage, convoId]);
-
-  const { data: currentUser } = useUsers().useCurrentUser();
-
+  if (groupedMessages.length == 0) {
+    return <div className="center div">Start your new journey</div>;
+  }
   return (
     <ul
       id="chatWrapper"
@@ -118,28 +162,23 @@ const MainChat = ({
       <li className="h-5 w-full">
         <div className="div" ref={loadMoreRef}></div>
       </li>
-      {groupedMessages.map((msg, greatI) => {
-        // const user = msg.sender;
-        return (
-          <li key={`${msg.id}_${greatI}`} className={"max-w-full py-2"}>
-            <div className="w-full">
-              {msg.content.map((m, i) => {
-                const key = `${m.id}_${i}`;
-                return (
-                  <Message
-                    key={key}
-                    message={msg}
-                    content={m}
-                    index={i}
-                    currentUser={currentUser as UserObj}
-                    convoId={convoId}
-                  />
-                );
-              })}
-            </div>
-          </li>
-        );
-      })}
+      {groupedMessages.map((msgGroup) => (
+        <li key={msgGroup.id} className="max-w-full py-2">
+          <div className="w-full">
+            {msgGroup.content.map((m, i) => (
+              <Message
+                key={`${m.id}_${i}`}
+                message={msgGroup}
+                content={m}
+                index={i}
+                currentUser={currentUser as UserObj}
+                convoId={convoId}
+                setmessage={setmessage}
+              />
+            ))}
+          </div>
+        </li>
+      ))}
     </ul>
   );
 };
@@ -148,11 +187,13 @@ const LONG_PRESS_DURATION = 500;
 
 const Message = ({
   currentUser,
+  setmessage,
   message,
   convoId,
   content,
   index,
 }: {
+  setmessage: React.Dispatch<React.SetStateAction<Message[]>>;
   content: GroupedMessage["content"][number];
   message: GroupedMessage;
   currentUser: UserObj;
@@ -246,6 +287,7 @@ const Message = ({
           onClose={handleClose}
           messageId={content.id}
           conversationId={convoId}
+          setmessage={setmessage} // 🔁 pass it here
         />
       )}
     </div>
